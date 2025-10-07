@@ -43,7 +43,7 @@ function detectBaseUrl() {
 
 return [
     'app' => [
-        'name' => 'Educatudo Platform',
+        'name' => 'Educatudo',
         'version' => '1.0.0',
         'url' => detectBaseUrl(),
         'base_path' => detectBasePath(), // Detectado automaticamente
