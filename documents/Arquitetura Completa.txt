@@ -1,0 +1,256 @@
+﻿Arquitetura Completa – Educatudo (MVC + MySQL + Composer)
+🌐 Estrutura de Domínios e Subdomínios
+* Educatudo Global
+
+   * educatudo.com/admin → Admin Global (Você/Equipe Educatudo)
+
+      * Escolas (White Label via Subdomínio)
+
+         * colag.educatudo.com/ → Login do Aluno
+
+         * colag.educatudo.com/professor → Login do Professor
+
+         * colag.educatudo.com/admin → Login da Escola/Coordenação
+
+         * colag.educatudo.com/pais → Login dos Pais/Responsáveis
+
+👉 Cada escola é identificada pelo subdomínio e vinculada no banco pelo campo escola_id.
+________________
+
+
+🔑 Perfis e Áreas de Acesso
+1. Admin Global (Educatudo)
+Acesso: educatudo.com/admin
+Funções:
+            * Criar, editar e remover escolas.
+
+            * Definir subdomínio (colag.educatudo.com).
+
+            * Cadastrar dados institucionais (logo, cores, background).
+
+            * Gerenciar planos e assinaturas das escolas.
+
+            * Gerenciar superusuários (funcionários da Educatudo).
+
+            * Visualizar estatísticas gerais (quantidade de escolas, alunos ativos, etc.).
+
+________________
+
+
+2. Admin da Escola (Coordenação/Direção)
+Acesso: colag.educatudo.com/admin
+Funções:
+               * Cadastro de alunos, professores e pais.
+
+               * Criação de turmas, séries e matérias.
+
+               * Upload do material didático (para alimentar a IA).
+
+               * Gestão dos acessos da própria escola.
+
+               * Relatórios gerais de desempenho da instituição.
+
+               * Configurações de identidade visual (tema white label).
+
+________________
+
+
+3. Professor
+Acesso: colag.educatudo.com/professor
+Funções:
+                  * Criar Jornadas do Aluno (trilhas de aprendizado).
+
+                  * Criar e aprovar exercícios (manual ou gerados pela IA).
+
+                  * Corrigir e acompanhar redações.
+
+                  * Visualizar relatórios de turmas e alunos.
+
+                  * Interagir via painel com os resultados da IA.
+
+________________
+
+
+4. Aluno
+Acesso: colag.educatudo.com/
+Funções:
+                     * Acessar Chat Tudinha (IA personalizada da escola).
+
+                     * Fazer exercícios e atividades.
+
+                     * Participar das Jornadas criadas pelo professor.
+
+                     * Fazer simulados de vestibulares.
+
+                     * Enviar e corrigir redações.
+
+                     * Jogar os jogos educativos (xadrez, damas, jogo do milhão).
+
+                     * Acompanhar histórico de desempenho.
+
+________________
+
+
+5. Pais/Responsáveis
+Acesso: colag.educatudo.com/pais
+Funções:
+                        * Visualizar notas e relatórios do(s) filho(s).
+
+                        * Acompanhar histórico de redações, exercícios e simulados.
+
+                        * Relatórios simplificados e fáceis de interpretar.
+
+________________
+
+
+🏗 Estrutura de Pastas (MVC)
+/educatudo
+│
+├── /app
+│   ├── /Core
+│   │    - App.php          # Roteamento central
+│   │    - Controller.php   # Classe base dos controllers
+│   │    - Model.php        # Classe base dos models
+│   │    - Database.php     # Conexão MySQL
+│   │
+│   ├── /Controllers
+│   │    - GlobalAdminController.php   # Admin Educatudo
+│   │    - EscolaController.php        # Admin da Escola
+│   │    - ProfessorController.php
+│   │    - AlunoController.php
+│   │    - PaisController.php
+│   │    - AuthController.php
+│   │    - ApiController.php
+│   │
+│   ├── /Models
+│   │    - Escola.php
+│   │    - Usuario.php
+│   │    - Aluno.php
+│   │    - Professor.php
+│   │    - Pai.php
+│   │    - Turma.php
+│   │    - Materia.php
+│   │    - Jornada.php
+│   │    - Exercicio.php
+│   │    - Redacao.php
+│   │    - Relatorio.php
+│   │
+│   ├── /Views
+│   │    ├── /global_admin
+│   │    │    - login.php
+│   │    │    - dashboard.php
+│   │    │    - escolas.php
+│   │    │    - usuarios.php
+│   │    │    - planos.php
+│   │    │
+│   │    ├── /admin_escola
+│   │    │    - login.php
+│   │    │    - dashboard.php
+│   │    │    - alunos.php
+│   │    │    - professores.php
+│   │    │    - turmas.php
+│   │    │    - materias.php
+│   │    │    - configuracoes.php
+│   │    │
+│   │    ├── /professor
+│   │    │    - login.php
+│   │    │    - dashboard.php
+│   │    │    - jornada.php
+│   │    │    - relatorios.php
+│   │    │    - exercicios.php
+│   │    │
+│   │    ├── /aluno
+│   │    │    - login.php
+│   │    │    - dashboard.php
+│   │    │    - chat_tudinha.php
+│   │    │    - exercicios.php
+│   │    │    - redacao.php
+│   │    │    - vestibulares.php
+│   │    │    - jogos.php
+│   │    │
+│   │    ├── /pais
+│   │    │    - login.php
+│   │    │    - dashboard.php
+│   │    │    - desempenho.php
+│   │    │    - relatorios.php
+│   │    │
+│   │    └── /templates
+│   │         - header.php
+│   │         - footer.php
+│   │         - sidebar.php
+│   │         - navbar.php
+│   │
+│   └── /Helpers
+│        - Auth.php
+│        - Session.php
+│        - Utils.php
+│        - Upload.php
+│
+├── /config
+│   - config.php
+│   - database.php
+│   - routes.php
+│
+├── /public
+│   - index.php
+│   - .htaccess
+│   ├── /assets
+│   │    ├── /css
+│   │    ├── /js
+│   │    ├── /img
+│   │    └── /uploads
+│
+├── /storage
+│   ├── /redacoes
+│   ├── /materiais
+│   └── /logs
+│
+├── /vendor
+│
+├── composer.json
+├── .env
+└── README.md
+
+________________
+🗄 Banco de Dados (visão lógica)
+Tabelas principais
+                           * usuarios → todos os logins (super_admin, admin_escola, professor, aluno, pai).
+
+                           * escolas → dados da instituição + subdomínio.
+
+                           * alunos → dados acadêmicos dos alunos (relacionados a usuarios).
+
+                           * professores → dados acadêmicos dos professores.
+
+                           * pais → responsáveis vinculados a alunos.
+
+                           * turmas → séries/anos letivos.
+
+                           * materias → disciplinas.
+
+                           * jornadas → trilhas criadas pelos professores.
+
+                           * exercicios → listas e questões.
+
+                           * redacoes → redações enviadas.
+
+                           * relatorios → relatórios de desempenho.
+
+                           * assinaturas → controle de planos das escolas.
+
+👉 Sempre com escola_id para separar dados entre instituições.
+________________
+
+
+📊 Resumo da Arquitetura
+                              * Admin Global (Educatudo) → cria e gerencia escolas.
+
+                              * Admin Escola → coordenação interna de cada instituição.
+
+                              * Professores → trilhas, exercícios e relatórios.
+
+                              * Alunos → chat, exercícios, redações, simulados e jogos.
+
+                              * Pais → acompanhamento da evolução do filho.
+
+________________

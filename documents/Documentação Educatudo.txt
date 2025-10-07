@@ -1,0 +1,256 @@
+﻿Documentação do Sistema Educatudo
+1. Visão Geral
+O Educatudo é uma plataforma educacional inovadora voltada para escolas, professores, alunos e pais, que centraliza recursos de ensino, aprendizagem e acompanhamento em um único ambiente digital.
+O grande diferencial está na integração personalizada com o material didático de cada escola, utilizando Inteligência Artificial baseada em RAG (Retrieval-Augmented Generation). Dessa forma, a base de conhecimento da plataforma reflete a metodologia e identidade pedagógica da instituição, garantindo personalização e aderência ao projeto educacional de cada parceiro.
+________________
+
+
+2. Módulos Principais
+2.1. Dashboard Inicial
+* Visão geral com indicadores de desempenho.
+
+* Notificações e comunicados da escola.
+
+* Atalhos para os módulos principais.
+
+________________
+
+
+2.2. Jornada do Aluno
+A Jornada do Aluno é uma trilha de atividades criada pelo professor para orientar o estudo de sua disciplina.
+   * Criação de Jornadas:
+ O professor acessa seu painel, seleciona sua disciplina e pode criar jornadas personalizadas.
+Cada jornada inclui:
+
+      * Nome da aula.
+
+      * Resumo e pontos principais da aula.
+
+      * Conteúdos adicionais.
+
+      * Exercícios (manuais ou gerados pela IA).
+
+      * Espaço para dúvidas.
+
+         * Resumos Inteligentes:
+
+            * O professor insere o resumo oficial da aula.
+
+            * O aluno produz o seu próprio resumo.
+
+            * A IA compara ambos, identifica lacunas de entendimento e gera explicações complementares.
+
+               * Exercícios:
+
+                  * Podem ser criados manualmente pelo professor ou sugeridos automaticamente pela IA em formato JSON, posteriormente aprovados pelo professor antes de serem publicados.
+
+                     * Relatórios da Jornada:
+
+                        * Tempo gasto em cada atividade.
+
+                        * Registro completo no histórico do aluno.
+
+                        * Relatórios individuais armazenados no banco de dados da escola.
+
+                           * Flexibilidade:
+
+                              * O professor pode reorganizar etapas, editar conteúdos e atualizar jornadas já criadas.
+
+________________
+
+
+2.3. Chat Tudinha (IA Educacional)
+                                 * Assistente virtual em forma de chat online.
+
+                                 * O aluno pode criar múltiplas conversas e organizá-las por matéria.
+
+                                 * Recursos disponíveis no chat:
+
+                                    * Mensagens de texto.
+
+                                    * Envio e recorte de imagens.
+
+                                    * Áudio com transcrição e resposta.
+
+                                       * A Tudinha responde com base no material didático da escola e nas interações anteriores do aluno.
+
+________________
+
+
+2.4. Banco de Exercícios
+                                          * Questões organizadas por matéria, série e tema.
+
+                                          * Exercícios interativos com correção automática.
+
+                                          * Registro do tempo gasto em cada questão e no conjunto de atividades.
+
+                                          * Possibilidade de criar listas de exercícios personalizadas, compostas por múltiplas questões.
+
+                                          * Relatórios individuais por aluno e relatórios consolidados por turma.
+
+________________
+
+
+2.5. Correção de Redação
+Módulo voltado para prática e avaliação de redação, dividido em três modalidades:
+                                             1. Temas Autorais
+
+                                                * O aluno escolhe um tema (ex.: Sociedade, Tecnologia etc.).
+
+                                                * Redige o texto em campo próprio ou envia uma foto da redação manuscrita (a IA transcreve).
+
+                                                * Controle de tempo de escrita e contagem de palavras.
+
+                                                   2. Temas de Vestibulares
+
+                                                      * O aluno seleciona um vestibular específico (ex.: ENEM 2019).
+
+                                                      * Redige no sistema ou envia foto da redação.
+
+                                                         3. Redações Pré-existentes
+
+                                                            * O aluno envia apenas a foto de uma redação já feita.
+
+                                                            * Insere o tema e a IA realiza a correção.
+
+👉 Todas as redações podem ser corrigidas automaticamente pela IA, seguindo critérios de vestibulares (competências, coerência, coesão, argumentação, etc.), gerando feedback detalhado para aluno e professor.
+________________
+
+
+2.6. Vestibulares
+                                                               * Simulados customizados ou baseados em provas reais (ENEM, Fuvest, etc.).
+
+                                                               * Estatísticas automáticas de desempenho.
+
+                                                               * Ranking de alunos por turma e escola.
+
+                                                               * Comparativo de evolução ao longo do tempo.
+
+________________
+
+
+2.7. Jogos Educativos
+                                                                  * Jogos interativos para reforçar o aprendizado.
+
+                                                                  * Exemplos: Xadrez, Damas e Jogo do Milhão.
+
+                                                                  * Os jogos de tabuleiro permitem que o aluno jogue contra a própria IA (Tudinha).
+
+                                                                  * Gamificação com pontuações, medalhas e desafios.
+
+________________
+
+
+3. Perfis de Acesso
+3.1. Administrador Educatudo
+                                                                     * Gerencia o sistema em nível global.
+
+                                                                     * Suporte às escolas e controle das funcionalidades.
+
+                                                                     * Cadastro completo de escolas, incluindo:
+
+                                                                        * Dados institucionais, logotipo, cores, plano de fundo e personalização.
+
+                                                                        * Instância própria (subdomínio ou subpasta).
+
+                                                                        * Gestão de usuários vinculados (professores, alunos, turmas, matérias e pais).
+
+________________
+
+
+3.2. Escola
+                                                                           * Cadastro e gestão de alunos, professores, turmas, séries, matérias e pais.
+
+                                                                           * Upload do material didático para alimentar a IA personalizada.
+
+                                                                           * Relatórios de desempenho da instituição.
+
+                                                                           * Controle de permissões e acessos.
+
+________________
+
+
+3.3. Professores
+                                                                              * Acesso restrito às disciplinas que lecionam.
+
+                                                                              * Criação de jornadas personalizadas.
+
+                                                                              * Criação ou aprovação de exercícios sugeridos pela IA.
+
+                                                                              * Acompanhamento individual da evolução de seus alunos.
+
+________________
+
+
+3.4. Alunos
+                                                                                 * Acesso ao Chat Tudinha, Banco de Exercícios, Redação, Jogos e Vestibulares.
+
+                                                                                 * Registro completo do progresso acadêmico.
+
+                                                                                 * Histórico de atividades e notas.
+
+________________
+
+
+3.5. Pais/Responsáveis
+                                                                                    * Acesso dedicado para acompanhamento do desempenho do filho.
+
+                                                                                    * Relatórios de evolução e participação.
+
+                                                                                    * Visualização de notas, redações e resultados de simulados.
+
+________________
+
+
+4. Fluxo Operacional
+                                                                                       1. Integração com a Escola
+
+                                                                                          * Fechamento da parceria.
+
+                                                                                          * Coleta do material didático.
+
+                                                                                          * Configuração da instância personalizada (subdomínio ou subpasta).
+
+                                                                                          * Alimentação da IA.
+
+                                                                                             2. Cadastro Inicial
+
+                                                                                                * Registro de alunos, professores, turmas e matérias.
+
+                                                                                                   3. Uso pelos Alunos
+
+                                                                                                      * Acesso aos módulos interativos.
+
+                                                                                                      * Participação em jornadas, exercícios, jogos e simulados.
+
+                                                                                                         4. Coleta e Análise de Dados
+
+                                                                                                            * Desempenho dos alunos é registrado em tempo real.
+
+                                                                                                            * Relatórios disponibilizados para escola, professores e pais.
+
+________________
+
+
+5. Relatórios e Inteligência de Dados
+                                                                                                               * Escolas: visão macro por turma e disciplina, indicadores de aprendizagem, comparativos anuais.
+
+                                                                                                               * Professores: detalhamento da turma, identificação de pontos fortes e dificuldades.
+
+                                                                                                               * Pais: relatórios claros e objetivos sobre a evolução do aluno.
+
+________________
+
+
+6. Benefícios
+                                                                                                                  * Personalização: IA baseada no material da própria escola.
+
+                                                                                                                  * Centralização: Todos os recursos em uma plataforma única.
+
+                                                                                                                  * Acompanhamento completo: Relatórios para escola, professores e pais.
+
+                                                                                                                  * Engajamento: Jogos, gamificação e trilhas de aprendizagem.
+
+                                                                                                                  * Preparação para o futuro: Simulados e correções de redação alinhados a vestibulares.
+
+                                                                                                                  * White Label: Cada escola possui sua instância exclusiva (subpasta ou subdomínio), com identidade visual própria e gestão isolada.

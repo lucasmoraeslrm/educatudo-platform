@@ -1,0 +1,328 @@
+﻿🗄 Modelo de Banco de Dados – Educatudo
+________________
+
+
+📌 Tabela: escolas
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador único da escola
+	nome
+	varchar
+	Nome da escola
+	subdominio
+	varchar
+	Ex: colag → acessa colag.educatudo.com
+	cnpj
+	varchar
+	CNPJ da escola (opcional)
+	logo_url
+	varchar
+	Caminho da logo
+	cor_primaria
+	varchar
+	Cor do tema
+	cor_secundaria
+	varchar
+	Cor do tema
+	ativa
+	boolean
+	Escola ativa/inativa
+	plano
+	enum
+	Plano da escola (básico, avançado etc.)
+	created_at
+	datetime
+	Data de criação
+	updated_at
+	datetime
+	Última atualização
+	________________
+
+
+📌 Tabela: usuarios
+(Contém todos os logins, diferenciados por tipo)
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador do usuário
+	escola_id
+	FK (int)
+	Escola vinculada
+	tipo
+	enum
+	super_admin, admin_escola, professor, aluno, pai
+	nome
+	varchar
+	Nome completo
+	email
+	varchar
+	Apenas para admins e pais
+	senha_hash
+	varchar
+	Senha criptografada
+	created_at
+	datetime
+	Data de cadastro
+	updated_at
+	datetime
+	Última atualização
+	________________
+
+
+📌 Tabela: alunos
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador do aluno
+	usuario_id
+	FK (int)
+	Relacionado à tabela usuarios
+	ra
+	varchar
+	Registro Acadêmico (RA) → login
+	turma_id
+	FK (int)
+	Turma vinculada
+	serie
+	varchar
+	Série/Ano letivo
+	data_nasc
+	date
+	Data de nascimento
+	responsavel_id
+	FK (int)
+	Pai/Responsável vinculado
+	ativo
+	boolean
+	Ativo/inativo
+	________________
+
+
+📌 Tabela: professores
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador do professor
+	usuario_id
+	FK (int)
+	Relacionado à tabela usuarios
+	codigo_prof
+	varchar
+	Código do professor → login
+	materias
+	text/json
+	Lista de matérias que leciona
+	ativo
+	boolean
+	Ativo/inativo
+	________________
+
+
+📌 Tabela: pais
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador do pai/responsável
+	usuario_id
+	FK (int)
+	Relacionado à tabela usuarios
+	cpf
+	varchar
+	CPF do responsável
+	telefone
+	varchar
+	Telefone de contato
+	ativo
+	boolean
+	Ativo/inativo
+	________________
+
+
+📌 Tabela: turmas
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador da turma
+	escola_id
+	FK (int)
+	Escola vinculada
+	nome
+	varchar
+	Nome da turma (Ex: 1ºA)
+	ano_letivo
+	int
+	Ano letivo
+	serie
+	varchar
+	Série/Ano
+	ativo
+	boolean
+	Ativo/inativo
+	________________
+
+
+📌 Tabela: materias
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador da matéria
+	escola_id
+	FK (int)
+	Escola vinculada
+	nome
+	varchar
+	Nome da matéria
+	professor_id
+	FK (int)
+	Professor responsável
+	________________
+
+
+📌 Tabela: jornadas
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador da jornada
+	professor_id
+	FK (int)
+	Professor criador
+	turma_id
+	FK (int)
+	Turma vinculada
+	titulo
+	varchar
+	Nome da jornada
+	descricao
+	text
+	Resumo da aula
+	estrutura
+	json
+	Estrutura da jornada (resumo, exercícios, dúvidas)
+	created_at
+	datetime
+	Data de criação
+	________________
+
+
+📌 Tabela: exercicios
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador do exercício
+	jornada_id
+	FK (int)
+	Jornada vinculada
+	enunciado
+	text
+	Enunciado da questão
+	resposta
+	text
+	Resposta correta
+	tipo
+	enum
+	multipla_escolha, dissertativa
+	gerado_ia
+	boolean
+	Se foi criado pela IA
+	aprovado
+	boolean
+	Se foi aprovado pelo professor
+	________________
+
+
+📌 Tabela: redacoes
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador da redação
+	aluno_id
+	FK (int)
+	Aluno autor
+	tema
+	varchar
+	Tema escolhido
+	texto
+	text
+	Texto da redação
+	imagem_url
+	varchar
+	Caso seja foto enviada
+	correcao
+	text
+	Correção gerada pela IA
+	nota
+	decimal
+	Nota atribuída
+	created_at
+	datetime
+	Data de envio
+	________________
+
+
+📌 Tabela: relatorios
+Campo
+	Tipo
+	Descrição
+	id
+	PK (int)
+	Identificador do relatório
+	aluno_id
+	FK (int)
+	Aluno vinculado
+	tipo
+	enum
+	desempenho, jornada, redacao
+	dados
+	json
+	Dados detalhados
+	created_at
+	datetime
+	Data do relatório
+	________________
+
+
+📌 Autenticação por Perfil
+* Admin Global → email + senha
+
+* Admin Escola (Coordenação) → email + senha
+
+* Professor → codigo_prof + senha
+
+* Aluno → ra + senha
+
+* Pais → email + senha
+
+________________
+
+
+📊 Resumo:
+   * usuarios → tabela central de autenticação.
+
+   * alunos, professores e pais → tabelas específicas com informações adicionais.
+
+   * Login diferenciado: RA (aluno), Código (professor), E-mail (admin/pais).
+
+   * Isolamento: todos os registros vinculados a escola_id.
+
+________________
