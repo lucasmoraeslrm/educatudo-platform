@@ -32,6 +32,14 @@ class Pai extends Model
         return $this->db->fetchAll($sql, ['escola_id' => $escolaId]);
     }
 
+    public function findByUsuarioId(int $usuarioId): ?array
+    {
+        $sql = "SELECT p.*, u.nome, u.email FROM {$this->table} p 
+                JOIN usuarios u ON p.usuario_id = u.id 
+                WHERE p.usuario_id = :usuario_id";
+        return $this->db->fetch($sql, ['usuario_id' => $usuarioId]);
+    }
+
     public function findByCpf(string $cpf, int $escolaId): ?array
     {
         $sql = "SELECT p.id, p.usuario_id, p.cpf, p.telefone, p.ativo, u.nome, u.email FROM {$this->table} p 
