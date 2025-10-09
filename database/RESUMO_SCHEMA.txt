@@ -1,0 +1,127 @@
+╔══════════════════════════════════════════════════════════════════╗
+║             SCHEMA.SQL - ISOLAMENTO COMPLETO POR ESCOLA          ║
+╚══════════════════════════════════════════════════════════════════╝
+
+✅ O QUE ESTÁ CONFIGURADO NO SCHEMA.SQL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. ✅ USUÁRIOS (Já isolados)
+   └─ Via escola_id na tabela usuarios
+
+2. ✅ MATÉRIAS (Isolamento completo)
+   ├─ Timestamps: created_at, updated_at
+   ├─ Constraint: UNIQUE(escola_id, nome)
+   └─ Comentário explicativo
+
+3. ✅ TURMAS (Isolamento completo)
+   ├─ Timestamps: created_at, updated_at
+   ├─ Constraint: UNIQUE(escola_id, nome, ano_letivo, serie)
+   └─ Comentário explicativo
+
+4. ✅ DADOS DE EXEMPLO
+   ├─ Escola Demo: 5 matérias + 2 turmas
+   └─ Colégio Exemplo: 5 matérias + 1 turma
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 CONSTRAINTS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+MATERIAS:
+  UNIQUE KEY unique_materia_escola (escola_id, nome)
+  → Impede duplicatas na mesma escola
+  → Permite mesmo nome em escolas diferentes
+
+TURMAS:
+  UNIQUE KEY unique_turma_escola (escola_id, nome, ano_letivo, serie)
+  → Impede turmas duplicadas no mesmo ano/série
+  → Permite mesmo nome em escolas diferentes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 COMO APLICAR NO SEU BANCO REMOTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OPÇÃO 1: Banco Novo (Recomendado se ainda não tem dados importantes)
+─────────────────────────────────────────────────────────────────
+1. Acesse phpMyAdmin do banco remoto
+2. Delete o database "educatudo_platform" (se existir)
+3. Vá em "Importar"
+4. Selecione: database/schema.sql
+5. Execute ▶️
+
+OPÇÃO 2: Banco Existente (Se já tem dados)
+───────────────────────────────────────────
+Execute as queries abaixo no phpMyAdmin > SQL:
+
+-- MATÉRIAS: Adicionar timestamps
+ALTER TABLE materias 
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- MATÉRIAS: Adicionar constraint (só se não tiver duplicatas!)
+ALTER TABLE materias 
+ADD UNIQUE KEY unique_materia_escola (escola_id, nome);
+
+-- TURMAS: Adicionar timestamps
+ALTER TABLE turmas 
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- TURMAS: Adicionar constraint (só se não tiver duplicatas!)
+ALTER TABLE turmas 
+ADD UNIQUE KEY unique_turma_escola (escola_id, nome, ano_letivo, serie);
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ VALIDAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Teste se funciona:
+
+1. Criar matéria na Escola 1:
+   INSERT INTO materias (escola_id, nome) VALUES (1, 'Artes');
+   → ✅ Deve funcionar
+
+2. Tentar duplicar:
+   INSERT INTO materias (escola_id, nome) VALUES (1, 'Artes');
+   → ❌ Deve dar erro (esperado!)
+
+3. Criar na Escola 2:
+   INSERT INTO materias (escola_id, nome) VALUES (2, 'Artes');
+   → ✅ Deve funcionar (escola diferente)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 CÓDIGO PHP JÁ PROTEGIDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ app/Models/Materia.php - Try-catch nos métodos
+✅ app/Models/Turma.php - Try-catch nos métodos
+✅ app/Controllers/GlobalAdminController.php - Validações
+✅ Views/global_admin/escola-details.php - Proteções
+
+→ Não é necessário alterar código PHP!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 RESULTADO ESPERADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌─────────────────────┬──────────────────────┬────────────────────┐
+│   ENTIDADE          │   ESCOLA DEMO        │  COLÉGIO EXEMPLO   │
+├─────────────────────┼──────────────────────┼────────────────────┤
+│ Usuários            │ Independentes        │ Independentes      │
+│ Matérias            │ Independentes        │ Independentes      │
+│ Turmas              │ Independentes        │ Independentes      │
+│ Professores         │ Independentes        │ Independentes      │
+│ Alunos              │ Independentes        │ Independentes      │
+│ Pais                │ Independentes        │ Independentes      │
+└─────────────────────┴──────────────────────┴────────────────────┘
+
+Cada escola é totalmente isolada! 🔒
+
+╔══════════════════════════════════════════════════════════════════╗
+║  PRONTO! Apenas execute database/schema.sql no phpMyAdmin       ║
+╚══════════════════════════════════════════════════════════════════╝
+

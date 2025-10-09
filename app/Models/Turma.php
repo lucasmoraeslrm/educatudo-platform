@@ -12,23 +12,41 @@ class Turma extends Model
         'nome',
         'ano_letivo',
         'serie',
-        'ativo'
+        'ativo',
+        'created_at',
+        'updated_at'
     ];
 
     public function getByEscola(int $escolaId): array
     {
-        $sql = "SELECT * FROM {$this->table} 
-                WHERE escola_id = :escola_id 
-                ORDER BY serie, nome";
-        return $this->db->fetchAll($sql, ['escola_id' => $escolaId]);
+        try {
+            $sql = "SELECT * FROM {$this->table} 
+                    WHERE escola_id = :escola_id 
+                    ORDER BY serie, nome";
+            $result = $this->db->fetchAll($sql, ['escola_id' => $escolaId]);
+            
+            // Garantir que retorne array
+            return is_array($result) ? $result : [];
+        } catch (\Exception $e) {
+            error_log("Erro ao buscar turmas da escola {$escolaId}: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function getAtivasByEscola(int $escolaId): array
     {
-        $sql = "SELECT * FROM {$this->table} 
-                WHERE escola_id = :escola_id AND ativo = 1
-                ORDER BY serie, nome";
-        return $this->db->fetchAll($sql, ['escola_id' => $escolaId]);
+        try {
+            $sql = "SELECT * FROM {$this->table} 
+                    WHERE escola_id = :escola_id AND ativo = 1
+                    ORDER BY serie, nome";
+            $result = $this->db->fetchAll($sql, ['escola_id' => $escolaId]);
+            
+            // Garantir que retorne array
+            return is_array($result) ? $result : [];
+        } catch (\Exception $e) {
+            error_log("Erro ao buscar turmas ativas da escola {$escolaId}: " . $e->getMessage());
+            return [];
+        }
     }
 
     public function findByNome(string $nome, int $escolaId): ?array
