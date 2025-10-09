@@ -592,22 +592,23 @@ ob_start();
                                     <i class="bi bi-plus-circle"></i> Novo Responsável
                                 </a>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="overflow-x: auto;">
                                 <table class="table table-hover">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Responsável</th>
-                                            <th>Email</th>
-                                            <th>Telefone</th>
-                                            <th>CPF</th>
-                                            <th>Status</th>
-                                            <th>Ações</th>
+                                            <th style="min-width: 180px;">Responsável</th>
+                                            <th style="min-width: 200px;">Email</th>
+                                            <th style="min-width: 120px;">Telefone</th>
+                                            <th style="min-width: 120px;">CPF</th>
+                                            <th style="min-width: 250px;">Alunos (Filhos)</th>
+                                            <th style="min-width: 80px;">Status</th>
+                                            <th style="min-width: 100px;">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php if (empty($pais)): ?>
                                         <tr>
-                                            <td colspan="6" class="text-center text-muted py-4">
+                                            <td colspan="7" class="text-center text-muted py-4">
                                                 <i class="bi bi-people" style="font-size: 2rem; opacity: 0.3;"></i>
                                                 <br><br>
                                                 <h6>Nenhum responsável cadastrado</h6>
@@ -630,6 +631,27 @@ ob_start();
                                                 <td><?php echo htmlspecialchars($pai['email'] ?? '-'); ?></td>
                                                 <td><?php echo htmlspecialchars($pai['telefone'] ?? '-'); ?></td>
                                                 <td><?php echo htmlspecialchars($pai['cpf'] ?? '-'); ?></td>
+                                                <td style="max-width: 300px;">
+                                                    <?php if (!empty($pai['alunos_vinculados'])): ?>
+                                                        <div class="d-flex flex-wrap gap-1" style="max-height: 80px; overflow-y: auto;">
+                                                            <?php foreach ($pai['alunos_vinculados'] as $aluno): ?>
+                                                                <span class="badge bg-info text-dark" 
+                                                                      style="white-space: nowrap;"
+                                                                      title="RA: <?php echo htmlspecialchars($aluno['ra']); ?><?php echo !empty($aluno['serie']) ? ' | Série: ' . htmlspecialchars($aluno['serie']) : ''; ?>">
+                                                                    <i class="bi bi-person"></i> <?php echo htmlspecialchars($aluno['nome']); ?>
+                                                                </span>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                        <small class="text-muted mt-1 d-block">
+                                                            <i class="bi bi-info-circle"></i> <?php echo count($pai['alunos_vinculados']); ?> 
+                                                            <?php echo count($pai['alunos_vinculados']) === 1 ? 'aluno' : 'alunos'; ?>
+                                                        </small>
+                                                    <?php else: ?>
+                                                        <span class="text-muted">
+                                                            <i class="bi bi-dash-circle"></i> Nenhum aluno vinculado
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td>
                                                     <span class="badge bg-<?php echo $pai['ativo'] ? 'success' : 'danger'; ?>">
                                                         <?php echo $pai['ativo'] ? 'Ativo' : 'Inativo'; ?>
@@ -668,6 +690,13 @@ ob_start();
                                     </thead>
                                     <tbody>
                                         <?php 
+                                        // DEBUG: Verificar o que está chegando
+                                        error_log("=== DEBUG VIEW MATERIAS ===");
+                                        error_log("Materias isset: " . (isset($materias) ? 'sim' : 'não'));
+                                        error_log("Materias is_array: " . (is_array($materias) ? 'sim' : 'não'));
+                                        error_log("Materias count: " . (isset($materias) && is_array($materias) ? count($materias) : '0'));
+                                        error_log("Materias value: " . json_encode($materias ?? 'não definido'));
+                                        
                                         // Garantir que $materias seja sempre um array válido
                                         if (!isset($materias) || !is_array($materias)) {
                                             $materias = [];

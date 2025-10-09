@@ -16,10 +16,25 @@ class GlobalAdminController extends Controller
         $escolaModel = new \Educatudo\Models\Escola($this->db);
         $estatisticas = $escolaModel->getEstatisticas();
         
+        // Buscar escolas recentes (últimas 5)
+        $escolas = $escolaModel->getAll();
+        
+        // Contar usuários de cada escola
+        $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+        foreach ($escolas as &$escola) {
+            $stats = $usuarioModel->getEstatisticas($escola['id']);
+            $escola['total_usuarios'] = $stats['total'] ?? 0;
+        }
+        unset($escola);
+        
+        // Pegar apenas as 5 mais recentes
+        $escolasRecentes = array_slice($escolas, 0, 5);
+        
         return $this->view('global_admin.index', [
             'title' => 'Admin Global - Educatudo',
             'user' => $user,
-            'estatisticas' => $estatisticas
+            'estatisticas' => $estatisticas,
+            'escolas' => $escolasRecentes
         ]);
     }
 
@@ -29,10 +44,20 @@ class GlobalAdminController extends Controller
         
         $escolaModel = new \Educatudo\Models\Escola($this->db);
         $escolas = $escolaModel->getAll();
+        $estatisticas = $escolaModel->getEstatisticas();
+        
+        // Contar usuários de cada escola
+        $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+        foreach ($escolas as &$escola) {
+            $stats = $usuarioModel->getEstatisticas($escola['id']);
+            $escola['total_usuarios'] = $stats['total'] ?? 0;
+        }
+        unset($escola);
         
         return $this->view('global_admin.escolas', [
             'title' => 'Gerenciar Escolas - Educatudo',
-            'escolas' => $escolas
+            'escolas' => $escolas,
+            'estatisticas' => $estatisticas
         ]);
     }
 
@@ -85,6 +110,13 @@ class GlobalAdminController extends Controller
         $alunos = $alunoModel->getByEscola($id);
         $professores = $professorModel->getByEscola($id);
         $pais = $paiModel->getByEscola($id);
+        
+        // Adicionar alunos vinculados a cada pai
+        foreach ($pais as &$pai) {
+            $pai['alunos_vinculados'] = $paiModel->getAlunos($pai['id']);
+        }
+        unset($pai); // Limpar referência
+        
         $turmas = $turmaModel->getByEscola($id);
         
         // Buscar matérias com tratamento de erro
@@ -99,8 +131,6 @@ class GlobalAdminController extends Controller
             error_log("Erro ao buscar matérias: " . $e->getMessage());
             $materias = [];
         }
-        
-        error_log("Retornando view escola-details");
         
         return $this->view('global_admin.escola-details', [
             'title' => 'Detalhes da Escola - Educatudo',
