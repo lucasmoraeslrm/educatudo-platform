@@ -360,7 +360,7 @@ ob_start();
                         <div class="tab-pane fade show active" id="admins" role="tabpanel">
                             <div class="d-flex justify-content-end mb-3">
                                 <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/usuarios/create'); ?>" class="btn btn-danger">
-                                    <i class="bi bi-plus-circle"></i> Novo Usuário
+                                    <i class="bi bi-plus-circle"></i> Novo Administrador
                                 </a>
                             </div>
                             <div class="table-responsive">

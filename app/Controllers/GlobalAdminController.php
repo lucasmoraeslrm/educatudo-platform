@@ -533,7 +533,7 @@ class GlobalAdminController extends Controller
             $usuarioData = [
                 'nome' => $data['nome'],
                 'email' => $data['email'],
-                'senha' => password_hash($data['senha'], PASSWORD_DEFAULT),
+                'senha_hash' => password_hash($data['senha'], PASSWORD_DEFAULT),
                 'tipo' => 'professor',
                 'escola_id' => $escolaId
             ];
@@ -676,7 +676,7 @@ class GlobalAdminController extends Controller
             
             // Atualizar senha se fornecida
             if (!empty($data['senha'])) {
-                $usuarioData['senha'] = password_hash($data['senha'], PASSWORD_DEFAULT);
+                $usuarioData['senha_hash'] = password_hash($data['senha'], PASSWORD_DEFAULT);
             }
             
             if (!$usuarioModel->update($professor['usuario_id'], $usuarioData)) {
@@ -1266,7 +1266,7 @@ class GlobalAdminController extends Controller
             $usuarioData = [
                 'nome' => $data['nome'],
                 'email' => !empty($data['email']) ? $data['email'] : null,
-                'senha' => password_hash($data['senha'], PASSWORD_DEFAULT),
+                'senha_hash' => password_hash($data['senha'], PASSWORD_DEFAULT),
                 'tipo' => 'aluno',
                 'escola_id' => $escolaId
             ];
@@ -1409,7 +1409,7 @@ class GlobalAdminController extends Controller
             ];
             
             if (!empty($data['senha'])) {
-                $usuarioData['senha'] = password_hash($data['senha'], PASSWORD_DEFAULT);
+                $usuarioData['senha_hash'] = password_hash($data['senha'], PASSWORD_DEFAULT);
             }
             
             if (!$usuarioModel->update($aluno['usuario_id'], $usuarioData)) {
@@ -1564,9 +1564,14 @@ class GlobalAdminController extends Controller
             return $this->redirect('/admin/escolas');
         }
         
+        // Buscar alunos da escola
+        $alunoModel = new \Educatudo\Models\Aluno($this->db);
+        $alunos = $alunoModel->getByEscola($escolaId);
+        
         return $this->view('global_admin.pai-create', [
             'title' => 'Novo Pai/Responsável - Educatudo',
-            'escola' => $escola
+            'escola' => $escola,
+            'alunos' => $alunos
         ]);
     }
     
@@ -1579,9 +1584,13 @@ class GlobalAdminController extends Controller
             $escolaModel = new \Educatudo\Models\Escola($this->db);
             $escola = $escolaModel->find($escolaId);
             
+            $alunoModel = new \Educatudo\Models\Aluno($this->db);
+            $alunos = $alunoModel->getByEscola($escolaId);
+            
             return $this->view('global_admin.pai-create', [
                 'title' => 'Novo Pai/Responsável - Educatudo',
                 'escola' => $escola,
+                'alunos' => $alunos,
                 'errors' => $errors
             ]);
         }
@@ -1594,7 +1603,7 @@ class GlobalAdminController extends Controller
             $usuarioData = [
                 'nome' => $data['nome'],
                 'email' => !empty($data['email']) ? $data['email'] : null,
-                'senha' => password_hash($data['senha'], PASSWORD_DEFAULT),
+                'senha_hash' => password_hash($data['senha'], PASSWORD_DEFAULT),
                 'tipo' => 'pai',
                 'escola_id' => $escolaId
             ];
@@ -1620,6 +1629,11 @@ class GlobalAdminController extends Controller
                 throw new \Exception('Erro ao criar pai/responsável');
             }
             
+            // Vincular alunos ao responsável
+            if (!empty($data['alunos']) && is_array($data['alunos'])) {
+                $paiModel->syncAlunos($paiId, $data['alunos']);
+            }
+            
             $this->db->commit();
             
             return $this->redirect('/admin/escolas/' . $escolaId);
@@ -1630,9 +1644,13 @@ class GlobalAdminController extends Controller
             $escolaModel = new \Educatudo\Models\Escola($this->db);
             $escola = $escolaModel->find($escolaId);
             
+            $alunoModel = new \Educatudo\Models\Aluno($this->db);
+            $alunos = $alunoModel->getByEscola($escolaId);
+            
             return $this->view('global_admin.pai-create', [
                 'title' => 'Novo Pai/Responsável - Educatudo',
                 'escola' => $escola,
+                'alunos' => $alunos,
                 'errors' => ['geral' => 'Erro ao criar pai/responsável: ' . $e->getMessage()]
             ]);
         }
@@ -1661,11 +1679,21 @@ class GlobalAdminController extends Controller
             return $this->redirect('/admin/escolas/' . $escolaId);
         }
         
+        // Buscar alunos da escola
+        $alunoModel = new \Educatudo\Models\Aluno($this->db);
+        $alunos = $alunoModel->getByEscola($escolaId);
+        
+        // Buscar alunos já vinculados a este responsável
+        $alunosVinculados = $paiModel->getAlunos($paiId);
+        $alunosVinculadosIds = array_column($alunosVinculados, 'id');
+        
         return $this->view('global_admin.pai-edit', [
             'title' => 'Editar Pai/Responsável - Educatudo',
             'escola' => $escola,
             'pai' => $pai,
-            'usuario' => $usuario
+            'usuario' => $usuario,
+            'alunos' => $alunos,
+            'alunosVinculados' => $alunosVinculadosIds
         ]);
     }
     
@@ -1689,11 +1717,19 @@ class GlobalAdminController extends Controller
             $usuarioModel = new \Educatudo\Models\Usuario($this->db);
             $usuario = $usuarioModel->find($pai['usuario_id']);
             
+            $alunoModel = new \Educatudo\Models\Aluno($this->db);
+            $alunos = $alunoModel->getByEscola($escolaId);
+            
+            $alunosVinculados = $paiModel->getAlunos($paiId);
+            $alunosVinculadosIds = array_column($alunosVinculados, 'id');
+            
             return $this->view('global_admin.pai-edit', [
                 'title' => 'Editar Pai/Responsável - Educatudo',
                 'escola' => $escola,
                 'pai' => $pai,
                 'usuario' => $usuario,
+                'alunos' => $alunos,
+                'alunosVinculados' => $alunosVinculadosIds,
                 'errors' => $errors
             ]);
         }
@@ -1708,7 +1744,7 @@ class GlobalAdminController extends Controller
             ];
             
             if (!empty($data['senha'])) {
-                $usuarioData['senha'] = password_hash($data['senha'], PASSWORD_DEFAULT);
+                $usuarioData['senha_hash'] = password_hash($data['senha'], PASSWORD_DEFAULT);
             }
             
             if (!$usuarioModel->update($pai['usuario_id'], $usuarioData)) {
@@ -1725,6 +1761,10 @@ class GlobalAdminController extends Controller
                 throw new \Exception('Erro ao atualizar pai/responsável');
             }
             
+            // Sincronizar alunos vinculados
+            $alunosIds = !empty($data['alunos']) && is_array($data['alunos']) ? $data['alunos'] : [];
+            $paiModel->syncAlunos($paiId, $alunosIds);
+            
             $this->db->commit();
             
             return $this->redirect('/admin/escolas/' . $escolaId);
@@ -1738,11 +1778,19 @@ class GlobalAdminController extends Controller
             $usuarioModel = new \Educatudo\Models\Usuario($this->db);
             $usuario = $usuarioModel->find($pai['usuario_id']);
             
+            $alunoModel = new \Educatudo\Models\Aluno($this->db);
+            $alunos = $alunoModel->getByEscola($escolaId);
+            
+            $alunosVinculados = $paiModel->getAlunos($paiId);
+            $alunosVinculadosIds = array_column($alunosVinculados, 'id');
+            
             return $this->view('global_admin.pai-edit', [
                 'title' => 'Editar Pai/Responsável - Educatudo',
                 'escola' => $escola,
                 'pai' => $pai,
                 'usuario' => $usuario,
+                'alunos' => $alunos,
+                'alunosVinculados' => $alunosVinculadosIds,
                 'errors' => ['geral' => 'Erro ao atualizar pai/responsável: ' . $e->getMessage()]
             ]);
         }
@@ -1808,6 +1856,218 @@ class GlobalAdminController extends Controller
         }
         
         if (empty($data['senha']) && !$excludeUsuarioId) {
+            $errors['senha'] = 'Senha é obrigatória';
+        } elseif (!empty($data['senha']) && strlen($data['senha']) < 6) {
+            $errors['senha'] = 'Senha deve ter pelo menos 6 caracteres';
+        }
+        
+        return $errors;
+    }
+
+    // ==================== CRUD de Admins da Escola ====================
+    
+    public function createAdminEscola(int $escolaId)
+    {
+        $this->requireAuth();
+        
+        $escolaModel = new \Educatudo\Models\Escola($this->db);
+        $escola = $escolaModel->find($escolaId);
+        
+        if (!$escola) {
+            return $this->redirect('/admin/escolas');
+        }
+        
+        return $this->view('global_admin.admin-escola-create', [
+            'title' => 'Novo Admin da Escola - Educatudo',
+            'escola' => $escola
+        ]);
+    }
+    
+    public function storeAdminEscola(int $escolaId)
+    {
+        $this->requireAuth();
+        
+        $escolaModel = new \Educatudo\Models\Escola($this->db);
+        $escola = $escolaModel->find($escolaId);
+        
+        if (!$escola) {
+            return $this->redirect('/admin/escolas');
+        }
+        
+        $data = $this->request->input();
+        $errors = $this->validateAdminEscola($data, $escolaId);
+        
+        if (!empty($errors)) {
+            return $this->view('global_admin.admin-escola-create', [
+                'title' => 'Novo Admin da Escola - Educatudo',
+                'escola' => $escola,
+                'errors' => $errors
+            ]);
+        }
+        
+        try {
+            $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+            
+            $usuarioData = [
+                'escola_id' => $escolaId,
+                'tipo' => 'admin_escola',
+                'nome' => $data['nome'],
+                'email' => $data['email'],
+                'senha_hash' => password_hash($data['senha'], PASSWORD_DEFAULT)
+            ];
+            
+            $usuarioId = $usuarioModel->create($usuarioData);
+            
+            if ($usuarioId) {
+                $_SESSION['success'] = 'Administrador criado com sucesso!';
+                return $this->redirect('/admin/escolas/' . $escolaId);
+            }
+            
+            throw new \Exception('Erro ao criar administrador');
+            
+        } catch (\Exception $e) {
+            return $this->view('global_admin.admin-escola-create', [
+                'title' => 'Novo Admin da Escola - Educatudo',
+                'escola' => $escola,
+                'errors' => ['geral' => 'Erro ao criar administrador: ' . $e->getMessage()]
+            ]);
+        }
+    }
+    
+    public function editAdminEscola(int $escolaId, int $usuarioId)
+    {
+        $this->requireAuth();
+        
+        $escolaModel = new \Educatudo\Models\Escola($this->db);
+        $escola = $escolaModel->find($escolaId);
+        
+        if (!$escola) {
+            return $this->redirect('/admin/escolas');
+        }
+        
+        $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+        $usuario = $usuarioModel->find($usuarioId);
+        
+        if (!$usuario || $usuario['escola_id'] != $escolaId || $usuario['tipo'] != 'admin_escola') {
+            return $this->redirect('/admin/escolas/' . $escolaId);
+        }
+        
+        return $this->view('global_admin.admin-escola-edit', [
+            'title' => 'Editar Admin da Escola - Educatudo',
+            'escola' => $escola,
+            'usuario' => $usuario
+        ]);
+    }
+    
+    public function updateAdminEscola(int $escolaId, int $usuarioId)
+    {
+        $this->requireAuth();
+        
+        $escolaModel = new \Educatudo\Models\Escola($this->db);
+        $escola = $escolaModel->find($escolaId);
+        
+        if (!$escola) {
+            return $this->redirect('/admin/escolas');
+        }
+        
+        $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+        $usuario = $usuarioModel->find($usuarioId);
+        
+        if (!$usuario || $usuario['escola_id'] != $escolaId || $usuario['tipo'] != 'admin_escola') {
+            return $this->redirect('/admin/escolas/' . $escolaId);
+        }
+        
+        $data = $this->request->input();
+        $errors = $this->validateAdminEscola($data, $escolaId, $usuarioId);
+        
+        if (!empty($errors)) {
+            return $this->view('global_admin.admin-escola-edit', [
+                'title' => 'Editar Admin da Escola - Educatudo',
+                'escola' => $escola,
+                'usuario' => $usuario,
+                'errors' => $errors
+            ]);
+        }
+        
+        try {
+            $usuarioData = [
+                'nome' => $data['nome'],
+                'email' => $data['email']
+            ];
+            
+            // Atualizar senha se fornecida
+            if (!empty($data['senha'])) {
+                $usuarioData['senha_hash'] = password_hash($data['senha'], PASSWORD_DEFAULT);
+            }
+            
+            if ($usuarioModel->update($usuarioId, $usuarioData)) {
+                $_SESSION['success'] = 'Administrador atualizado com sucesso!';
+                return $this->redirect('/admin/escolas/' . $escolaId);
+            }
+            
+            throw new \Exception('Erro ao atualizar administrador');
+            
+        } catch (\Exception $e) {
+            return $this->view('global_admin.admin-escola-edit', [
+                'title' => 'Editar Admin da Escola - Educatudo',
+                'escola' => $escola,
+                'usuario' => $usuario,
+                'errors' => ['geral' => 'Erro ao atualizar administrador: ' . $e->getMessage()]
+            ]);
+        }
+    }
+    
+    public function deleteAdminEscola(int $escolaId, int $usuarioId)
+    {
+        $this->requireAuth();
+        
+        $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+        $usuario = $usuarioModel->find($usuarioId);
+        
+        if (!$usuario || $usuario['escola_id'] != $escolaId || $usuario['tipo'] != 'admin_escola') {
+            $_SESSION['error'] = 'Administrador não encontrado';
+            return $this->redirect('/admin/escolas/' . $escolaId);
+        }
+        
+        if ($usuarioModel->delete($usuarioId)) {
+            $_SESSION['success'] = 'Administrador excluído com sucesso!';
+        } else {
+            $_SESSION['error'] = 'Erro ao excluir administrador';
+        }
+        
+        return $this->redirect('/admin/escolas/' . $escolaId);
+    }
+    
+    private function validateAdminEscola(array $data, int $escolaId, int $excludeId = null): array
+    {
+        $errors = [];
+        
+        if (empty($data['nome'])) {
+            $errors['nome'] = 'Nome é obrigatório';
+        }
+        
+        if (empty($data['email'])) {
+            $errors['email'] = 'Email é obrigatório';
+        } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Email inválido';
+        } else {
+            // Verificar se email já existe
+            $usuarioModel = new \Educatudo\Models\Usuario($this->db);
+            $sql = "SELECT id FROM usuarios WHERE email = :email AND escola_id = :escola_id";
+            $params = ['email' => $data['email'], 'escola_id' => $escolaId];
+            
+            if ($excludeId) {
+                $sql .= " AND id != :exclude_id";
+                $params['exclude_id'] = $excludeId;
+            }
+            
+            $existente = $this->db->fetch($sql, $params);
+            if ($existente) {
+                $errors['email'] = 'Email já cadastrado nesta escola';
+            }
+        }
+        
+        if (empty($data['senha']) && !$excludeId) {
             $errors['senha'] = 'Senha é obrigatória';
         } elseif (!empty($data['senha']) && strlen($data['senha']) < 6) {
             $errors['senha'] = 'Senha deve ter pelo menos 6 caracteres';

@@ -77,6 +77,18 @@ CREATE TABLE pais (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+-- Tabela: aluno_pai (relacionamento muitos-para-muitos)
+-- Um pai pode ter vários filhos e um aluno pode ter vários responsáveis
+CREATE TABLE aluno_pai (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL,
+    pai_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
+    FOREIGN KEY (pai_id) REFERENCES pais(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_aluno_pai (aluno_id, pai_id)
+);
+
 -- Tabela: turmas
 -- Cada escola tem suas próprias turmas independentes
 CREATE TABLE turmas (

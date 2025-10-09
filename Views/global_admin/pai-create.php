@@ -94,6 +94,53 @@
                             </div>
                         </div>
 
+                        <!-- Alunos (Filhos) -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <i class="bi bi-people-fill"></i> Alunos Vinculados (Filhos)
+                                </label>
+                                <div class="card">
+                                    <div class="card-body" style="max-height: 250px; overflow-y: auto;">
+                                        <?php if (empty($alunos)): ?>
+                                            <p class="text-muted mb-0">
+                                                <i class="bi bi-info-circle"></i> Nenhum aluno cadastrado nesta escola.
+                                            </p>
+                                        <?php else: ?>
+                                            <small class="text-muted d-block mb-2">
+                                                Selecione os alunos que este responsável irá acompanhar:
+                                            </small>
+                                            <div class="row">
+                                                <?php foreach ($alunos as $aluno): ?>
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" 
+                                                                   name="alunos[]" value="<?php echo $aluno['id']; ?>" 
+                                                                   id="aluno_<?php echo $aluno['id']; ?>"
+                                                                   <?php echo in_array($aluno['id'], $_POST['alunos'] ?? []) ? 'checked' : ''; ?>>
+                                                            <label class="form-check-label" for="aluno_<?php echo $aluno['id']; ?>">
+                                                                <strong><?php echo htmlspecialchars($aluno['nome']); ?></strong>
+                                                                <br>
+                                                                <small class="text-muted">
+                                                                    RA: <?php echo htmlspecialchars($aluno['ra']); ?>
+                                                                    <?php if (!empty($aluno['serie'])): ?>
+                                                                        | Série: <?php echo htmlspecialchars($aluno['serie']); ?>
+                                                                    <?php endif; ?>
+                                                                </small>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-lightbulb"></i> Você pode selecionar múltiplos alunos
+                                </small>
+                            </div>
+                        </div>
+
                         <!-- Botões -->
                         <div class="d-flex justify-content-end gap-2">
                             <a href="<?php echo $app->url('/admin/escolas/' . $escola['id']); ?>" class="btn btn-secondary">
