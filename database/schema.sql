@@ -83,13 +83,17 @@ CREATE TABLE turmas (
 );
 
 -- Tabela: materias
+-- Cada escola tem suas próprias matérias independentes
 CREATE TABLE materias (
     id INT PRIMARY KEY AUTO_INCREMENT,
     escola_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
     professor_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (escola_id) REFERENCES escolas(id) ON DELETE CASCADE,
     FOREIGN KEY (professor_id) REFERENCES professores(id) ON DELETE SET NULL,
+    UNIQUE KEY unique_materia_escola (escola_id, nome),
     INDEX idx_escola (escola_id)
 );
 
@@ -159,7 +163,14 @@ CREATE TABLE assinaturas (
     INDEX idx_escola_ativa (escola_id, ativa)
 );
 
--- Inserir dados iniciais
+-- ================================================================
+-- DADOS DE EXEMPLO
+-- ================================================================
+-- IMPORTANTE: Matérias são específicas de cada escola!
+-- Uma matéria criada na Escola Demo NÃO aparece no Colégio Exemplo
+-- ================================================================
+
+-- Inserir escolas de exemplo
 INSERT INTO escolas (nome, subdominio, plano) VALUES
 ('Escola Demo', 'demo', 'avancado'),
 ('Colégio Exemplo', 'colegio', 'basico');
@@ -188,12 +199,27 @@ INSERT INTO alunos (usuario_id, ra, serie, data_nasc) VALUES
 
 -- Turma exemplo
 INSERT INTO turmas (escola_id, nome, ano_letivo, serie) VALUES
-(1, '1º A', 2024, '1º Ano');
+(1, '1º A', 2024, '1º Ano'),
+(1, '2º B', 2024, '2º Ano'),
+(2, '3º A', 2024, '3º Ano');
 
--- Matéria exemplo
+-- Matérias da Escola Demo (ID 1)
 INSERT INTO materias (escola_id, nome, professor_id) VALUES
-(1, 'Matemática', 1);
+(1, 'Matemática', 1),
+(1, 'Português', NULL),
+(1, 'História', NULL),
+(1, 'Geografia', NULL),
+(1, 'Ciências', NULL);
+
+-- Matérias do Colégio Exemplo (ID 2) - matérias independentes
+INSERT INTO materias (escola_id, nome, professor_id) VALUES
+(2, 'Matemática', NULL),
+(2, 'Física', NULL),
+(2, 'Química', NULL),
+(2, 'Biologia', NULL),
+(2, 'Inglês', NULL);
 
 -- Assinatura exemplo
 INSERT INTO assinaturas (escola_id, plano, data_inicio, data_fim) VALUES
-(1, 'avancado', '2024-01-01', '2024-12-31');
+(1, 'avancado', '2024-01-01', '2024-12-31'),
+(2, 'basico', '2024-01-01', '2024-12-31');

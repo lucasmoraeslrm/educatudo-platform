@@ -17,6 +17,49 @@ if (!$escola) {
 ob_start();
 ?>
 
+<style>
+/* Corrigir cores das Nav Tabs */
+.nav-tabs .nav-link {
+    color: #495057 !important;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #0d6efd !important;
+    background-color: #e9ecef;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd !important;
+    background-color: #fff !important;
+    border-color: #dee2e6 #dee2e6 #fff;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link .badge {
+    opacity: 1 !important;
+}
+
+/* Garantir que o conteúdo das tabelas seja visível */
+.tab-content {
+    background-color: #fff;
+    color: #212529;
+}
+
+.table {
+    color: #212529 !important;
+}
+
+.table thead th {
+    color: #495057 !important;
+}
+
+.table tbody td {
+    color: #212529 !important;
+}
+</style>
+
 <div class="container-fluid">
     <!-- Header da Escola -->
     <div class="row mb-4">
@@ -232,168 +275,545 @@ ob_start();
                 </div>
             </div>
         </div>
-    </div>
+     </div>
 
-    <!-- Usuários da Escola -->
+     <!-- Adicionar Novos Usuários -->
+     <div class="row mb-4">
+         <div class="col-md-12 mb-3">
+             <div class="card">
+                 <div class="card-header">
+                     <h5 class="mb-0">Adicionar Recursos Acadêmicos</h5>
+                 </div>
+                 <div class="card-body">
+                     <div class="d-flex gap-2 flex-wrap">
+                         <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/materias/create'); ?>" class="btn btn-outline-info">
+                             <i class="bi bi-book"></i> Nova Matéria
+                         </a>
+                         <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/turmas/create'); ?>" class="btn btn-outline-secondary">
+                             <i class="bi bi-collection"></i> Nova Turma
+                         </a>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+    <!-- Usuários da Escola com Nav Tabs -->
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Usuários da Escola</h5>
-                    <div class="d-flex gap-2">
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-sm btn-outline-primary active" onclick="filtrarUsuarios('todos')">Todos</button>
-                            <button class="btn btn-sm btn-outline-primary" onclick="filtrarUsuarios('aluno')">Alunos</button>
-                            <button class="btn btn-sm btn-outline-primary" onclick="filtrarUsuarios('professor')">Professores</button>
-                            <button class="btn btn-sm btn-outline-primary" onclick="filtrarUsuarios('pai')">Pais</button>
-                        </div>
-                        <div class="btn-group" role="group">
-                            <a href="<?php echo $app->url('/admin-escola/professores/create'); ?>" class="btn btn-sm btn-success" title="Novo Professor">
-                                <i class="bi bi-person-badge"></i>
-                            </a>
-                            <a href="<?php echo $app->url('/admin-escola/alunos/create'); ?>" class="btn btn-sm btn-success" title="Novo Aluno">
-                                <i class="bi bi-person-check"></i>
-                            </a>
-                            <a href="<?php echo $app->url('/admin-escola/pais/create'); ?>" class="btn btn-sm btn-success" title="Novo Pai">
-                                <i class="bi bi-people"></i>
-                            </a>
-                        </div>
-                    </div>
+                <div class="card-header">
+                    <h5 class="mb-0">Gestão de Usuários</h5>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Usuário</th>
-                                    <th>Tipo</th>
-                                    <th>Login</th>
-                                    <th>Email</th>
-                                    <th>Status</th>
-                                    <th>Último Login</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($usuarios)): ?>
-                                <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">
-                                        <i class="bi bi-people" style="font-size: 2rem; opacity: 0.3;"></i>
-                                        <br><br>
-                                        <h6>Nenhum usuário encontrado</h6>
-                                        <p class="mb-0">Esta escola ainda não possui usuários cadastrados.</p>
-                                    </td>
-                                </tr>
-                                <?php else: ?>
-                                    <?php foreach ($usuarios as $usuario): ?>
-                                    <tr data-tipo="<?php echo $usuario['tipo']; ?>">
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="bg-<?php 
-                                                    echo $usuario['tipo'] === 'admin_escola' ? 'danger' : 
-                                                        ($usuario['tipo'] === 'professor' ? 'info' : 
-                                                            ($usuario['tipo'] === 'aluno' ? 'success' : 'warning')); 
-                                                ?> text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                                    <i class="bi bi-<?php 
-                                                        echo $usuario['tipo'] === 'admin_escola' ? 'shield-check' : 
-                                                            ($usuario['tipo'] === 'professor' ? 'person-badge' : 
-                                                                ($usuario['tipo'] === 'aluno' ? 'person-check' : 'people')); 
-                                                    ?>"></i>
-                                                </div>
-                                                <div>
-                                                    <strong><?php echo htmlspecialchars($usuario['nome']); ?></strong>
-                                                    <br><small class="text-muted">ID: <?php echo $usuario['id']; ?></small>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-<?php 
-                                                echo $usuario['tipo'] === 'admin_escola' ? 'danger' : 
-                                                    ($usuario['tipo'] === 'professor' ? 'info' : 
-                                                        ($usuario['tipo'] === 'aluno' ? 'success' : 'warning')); 
-                                            ?>">
-                                                <?php echo ucfirst(str_replace('_', ' ', $usuario['tipo'])); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php 
-                                            // Mostrar o método de login baseado no tipo
-                                            if ($usuario['tipo'] === 'professor') {
-                                                // Buscar código do professor
-                                                $professorModel = new \Educatudo\Models\Professor($db);
-                                                $professor = $professorModel->findByUsuarioId($usuario['id']);
-                                                echo '<code>' . htmlspecialchars($professor['codigo_prof'] ?? 'N/A') . '</code>';
-                                            } elseif ($usuario['tipo'] === 'aluno') {
-                                                // Buscar RA do aluno
-                                                $alunoModel = new \Educatudo\Models\Aluno($db);
-                                                $aluno = $alunoModel->findByUsuarioId($usuario['id']);
-                                                echo '<code>' . htmlspecialchars($aluno['ra'] ?? 'N/A') . '</code>';
-                                            } else {
-                                                // Admin e Pais usam email
-                                                echo '<code>' . htmlspecialchars($usuario['email'] ?? 'N/A') . '</code>';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($usuario['email'] ?? 'N/A'); ?></td>
-                                        <td><span class="badge bg-success">Ativo</span></td>
-                                        <td>
-                                            <small class="text-muted">
-                                                <?php echo isset($usuario['ultimo_login']) ? date('d/m/Y H:i', strtotime($usuario['ultimo_login'])) : 'Nunca'; ?>
-                                            </small>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <?php if ($usuario['tipo'] === 'professor'): ?>
-                                                    <a href="<?php echo $app->url('/admin-escola/professores/' . $usuario['id'] . '/edit'); ?>" 
-                                                       class="btn btn-sm btn-outline-primary" title="Editar Professor">
-                                                        <i class="bi bi-pencil"></i>
+                <div class="card-body">
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="usuariosTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="admins-tab" data-bs-toggle="tab" data-bs-target="#admins" type="button" role="tab">
+                                <i class="bi bi-shield-check"></i> Usuários da Escola
+                                <span class="badge bg-danger ms-1">
+                                    <?php 
+                                    $adminsCount = count(array_filter($usuarios, function($u) { 
+                                        return $u['tipo'] === 'admin_escola' || $u['tipo'] === 'diretor' || $u['tipo'] === 'coordenador'; 
+                                    }));
+                                    echo $adminsCount;
+                                    ?>
+                                </span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="professores-tab" data-bs-toggle="tab" data-bs-target="#professores" type="button" role="tab">
+                                <i class="bi bi-person-badge"></i> Professores
+                                <span class="badge bg-info ms-1"><?php echo count($professores); ?></span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="alunos-tab" data-bs-toggle="tab" data-bs-target="#alunos" type="button" role="tab">
+                                <i class="bi bi-person-check"></i> Alunos
+                                <span class="badge bg-success ms-1"><?php echo count($alunos); ?></span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pais-tab" data-bs-toggle="tab" data-bs-target="#pais" type="button" role="tab">
+                                <i class="bi bi-people"></i> Pais/Responsáveis
+                                <span class="badge bg-warning ms-1"><?php echo count($pais); ?></span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="materias-tab" data-bs-toggle="tab" data-bs-target="#materias" type="button" role="tab">
+                                <i class="bi bi-book"></i> Matérias
+                                <span class="badge bg-primary ms-1"><?php echo count($materias); ?></span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="turmas-tab" data-bs-toggle="tab" data-bs-target="#turmas" type="button" role="tab">
+                                <i class="bi bi-collection"></i> Turmas
+                                <span class="badge bg-secondary ms-1"><?php echo count($turmas); ?></span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="usuariosTabContent">
+                        
+                        <!-- Tab: Usuários da Escola (Diretores, Coordenadores) -->
+                        <div class="tab-pane fade show active" id="admins" role="tabpanel">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/usuarios/create'); ?>" class="btn btn-danger">
+                                    <i class="bi bi-plus-circle"></i> Novo Usuário
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Usuário</th>
+                                            <th>Cargo</th>
+                                            <th>Email</th>
+                                            <th>Telefone</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        $admins = array_filter($usuarios, function($u) { 
+                                            return $u['tipo'] === 'admin_escola' || $u['tipo'] === 'diretor' || $u['tipo'] === 'coordenador'; 
+                                        });
+                                        
+                                        if (empty($admins)): 
+                                        ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="bi bi-shield-check" style="font-size: 2rem; opacity: 0.3;"></i>
+                                                <br><br>
+                                                <h6>Nenhum usuário administrativo cadastrado</h6>
+                                                <p class="mb-0">Clique em "Novo Usuário" para adicionar um diretor ou coordenador.</p>
+                                            </td>
+                                        </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($admins as $admin): ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-shield-check"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong><?php echo htmlspecialchars($admin['nome']); ?></strong>
+                                                            <br><small class="text-muted">ID: <?php echo $admin['id']; ?></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-danger">
+                                                        <?php 
+                                                        $cargo = ucfirst(str_replace('_', ' ', $admin['tipo']));
+                                                        echo htmlspecialchars($cargo);
+                                                        ?>
+                                                    </span>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($admin['email'] ?? '-'); ?></td>
+                                                <td>
+                                                    <?php 
+                                                    // Você pode adicionar campo telefone na tabela usuarios se necessário
+                                                    echo '<span class="text-muted">-</span>'; 
+                                                    ?>
+                                                </td>
+                                                <td><span class="badge bg-success">Ativo</span></td>
+                                                <td>
+                                                    <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/usuarios/' . $admin['id'] . '/edit'); ?>" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i> Editar
                                                     </a>
-                                                <?php elseif ($usuario['tipo'] === 'aluno'): ?>
-                                                    <a href="<?php echo $app->url('/admin-escola/alunos/' . $usuario['id'] . '/edit'); ?>" 
-                                                       class="btn btn-sm btn-outline-primary" title="Editar Aluno">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-                                                <?php elseif ($usuario['tipo'] === 'pai'): ?>
-                                                    <a href="<?php echo $app->url('/admin-escola/pais/' . $usuario['id'] . '/edit'); ?>" 
-                                                       class="btn btn-sm btn-outline-primary" title="Editar Pai">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <button class="btn btn-sm btn-outline-secondary" disabled title="Admin não pode ser editado">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </button>
-                                                <?php endif; ?>
-                                                
-                                                <button class="btn btn-sm btn-outline-info" title="Ver detalhes">
-                                                    <i class="bi bi-eye"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Botões de Criação -->
-            <div class="card-footer bg-light">
-                <div class="row">
-                    <div class="col-12">
-                        <h6 class="mb-3">Adicionar Novos Usuários:</h6>
-                        <div class="d-flex gap-2 flex-wrap">
-                            <a href="<?php echo $app->url('/admin-escola/professores/create'); ?>" class="btn btn-outline-primary">
-                                <i class="bi bi-person-badge"></i> Novo Professor
-                            </a>
-                            <a href="<?php echo $app->url('/admin-escola/alunos/create'); ?>" class="btn btn-outline-success">
-                                <i class="bi bi-person-check"></i> Novo Aluno
-                            </a>
-                            <a href="<?php echo $app->url('/admin-escola/pais/create'); ?>" class="btn btn-outline-warning">
-                                <i class="bi bi-people"></i> Novo Pai/Responsável
-                            </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+
+                        <!-- Tab: Professores -->
+                        <div class="tab-pane fade" id="professores" role="tabpanel">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/professores/create'); ?>" class="btn btn-info">
+                                    <i class="bi bi-plus-circle"></i> Novo Professor
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Professor</th>
+                                            <th>Código</th>
+                                            <th>Email</th>
+                                            <th>Matérias</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($professores)): ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="bi bi-person-badge" style="font-size: 2rem; opacity: 0.3;"></i>
+                                                <br><br>
+                                                <h6>Nenhum professor cadastrado</h6>
+                                            </td>
+                                        </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($professores as $prof): ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-person-badge"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong><?php echo htmlspecialchars($prof['nome']); ?></strong>
+                                                            <br><small class="text-muted">ID: <?php echo $prof['usuario_id']; ?></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><code><?php echo htmlspecialchars($prof['codigo_prof']); ?></code></td>
+                                                <td><?php echo htmlspecialchars($prof['email'] ?? '-'); ?></td>
+                                                <td>
+                                                    <?php 
+                                                    $materias = !empty($prof['materias']) ? json_decode($prof['materias'], true) : [];
+                                                    if (!empty($materias)) {
+                                                        echo '<small>' . htmlspecialchars(implode(', ', array_slice($materias, 0, 2))) . '</small>';
+                                                        if (count($materias) > 2) {
+                                                            echo ' <span class="badge bg-secondary">+' . (count($materias) - 2) . '</span>';
+                                                        }
+                                                    } else {
+                                                        echo '<span class="text-muted">-</span>';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-<?php echo $prof['ativo'] ? 'success' : 'danger'; ?>">
+                                                        <?php echo $prof['ativo'] ? 'Ativo' : 'Inativo'; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/professores/' . $prof['id'] . '/edit'); ?>" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Alunos -->
+                        <div class="tab-pane fade" id="alunos" role="tabpanel">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/alunos/create'); ?>" class="btn btn-success">
+                                    <i class="bi bi-plus-circle"></i> Novo Aluno
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Aluno</th>
+                                            <th>RA</th>
+                                            <th>Email</th>
+                                            <th>Série</th>
+                                            <th>Turma</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($alunos)): ?>
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="bi bi-person-check" style="font-size: 2rem; opacity: 0.3;"></i>
+                                                <br><br>
+                                                <h6>Nenhum aluno cadastrado</h6>
+                                            </td>
+                                        </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($alunos as $aluno): ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-person-check"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong><?php echo htmlspecialchars($aluno['nome']); ?></strong>
+                                                            <br><small class="text-muted">ID: <?php echo $aluno['usuario_id']; ?></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><code><?php echo htmlspecialchars($aluno['ra']); ?></code></td>
+                                                <td><?php echo htmlspecialchars($aluno['email'] ?? '-'); ?></td>
+                                                <td><small><?php echo htmlspecialchars($aluno['serie'] ?? '-'); ?></small></td>
+                                                <td>
+                                                    <?php 
+                                                    if (!empty($aluno['turma_nome'])) {
+                                                        echo '<span class="badge bg-secondary">' . htmlspecialchars($aluno['turma_nome']) . '</span>';
+                                                    } else {
+                                                        echo '<span class="text-muted">-</span>';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-<?php echo $aluno['ativo'] ? 'success' : 'danger'; ?>">
+                                                        <?php echo $aluno['ativo'] ? 'Ativo' : 'Inativo'; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/alunos/' . $aluno['id'] . '/edit'); ?>" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Pais/Responsáveis -->
+                        <div class="tab-pane fade" id="pais" role="tabpanel">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/pais/create'); ?>" class="btn btn-warning">
+                                    <i class="bi bi-plus-circle"></i> Novo Responsável
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Responsável</th>
+                                            <th>Email</th>
+                                            <th>Telefone</th>
+                                            <th>CPF</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($pais)): ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="bi bi-people" style="font-size: 2rem; opacity: 0.3;"></i>
+                                                <br><br>
+                                                <h6>Nenhum responsável cadastrado</h6>
+                                            </td>
+                                        </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($pais as $pai): ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-people"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong><?php echo htmlspecialchars($pai['nome']); ?></strong>
+                                                            <br><small class="text-muted">ID: <?php echo $pai['usuario_id']; ?></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($pai['email'] ?? '-'); ?></td>
+                                                <td><?php echo htmlspecialchars($pai['telefone'] ?? '-'); ?></td>
+                                                <td><?php echo htmlspecialchars($pai['cpf'] ?? '-'); ?></td>
+                                                <td>
+                                                    <span class="badge bg-<?php echo $pai['ativo'] ? 'success' : 'danger'; ?>">
+                                                        <?php echo $pai['ativo'] ? 'Ativo' : 'Inativo'; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/pais/' . $pai['id'] . '/edit'); ?>" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Matérias -->
+                        <div class="tab-pane fade" id="materias" role="tabpanel">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/materias/create'); ?>" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Nova Matéria
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Matéria</th>
+                                            <th>Professor Responsável</th>
+                                            <th>Criada em</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php 
+                                        // Garantir que $materias seja sempre um array válido
+                                        if (!isset($materias) || !is_array($materias)) {
+                                            $materias = [];
+                                        }
+                                        ?>
+                                        <?php if (empty($materias)): ?>
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">
+                                                <i class="bi bi-book" style="font-size: 2rem; opacity: 0.3;"></i>
+                                                <br><br>
+                                                <h6>Nenhuma matéria cadastrada</h6>
+                                                <p class="mb-0">Clique em "Nova Matéria" para começar.</p>
+                                            </td>
+                                        </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($materias as $materia): ?>
+                                                <?php 
+                                                // Proteção: verificar se $materia é um array
+                                                if (!is_array($materia)) {
+                                                    continue;
+                                                }
+                                                ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-book"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong><?php echo htmlspecialchars($materia['nome'] ?? 'Sem nome'); ?></strong>
+                                                            <br><small class="text-muted">ID: <?php echo $materia['id'] ?? '-'; ?></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <?php 
+                                                    if (!empty($materia['professor_nome'])) {
+                                                        echo '<span class="badge bg-info">' . htmlspecialchars($materia['professor_nome']) . '</span>';
+                                                    } else {
+                                                        echo '<span class="text-muted">Sem professor</span>';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        <?php echo isset($materia['created_at']) ? date('d/m/Y', strtotime($materia['created_at'])) : '-'; ?>
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/materias/' . ($materia['id'] ?? 0) . '/edit'); ?>" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Turmas -->
+                        <div class="tab-pane fade" id="turmas" role="tabpanel">
+                            <div class="d-flex justify-content-end mb-3">
+                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/turmas/create'); ?>" class="btn btn-secondary">
+                                    <i class="bi bi-plus-circle"></i> Nova Turma
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Turma</th>
+                                            <th>Série</th>
+                                            <th>Ano Letivo</th>
+                                            <th>Período</th>
+                                            <th>Alunos</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (empty($turmas)): ?>
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="bi bi-collection" style="font-size: 2rem; opacity: 0.3;"></i>
+                                                <br><br>
+                                                <h6>Nenhuma turma cadastrada</h6>
+                                                <p class="mb-0">Clique em "Nova Turma" para começar.</p>
+                                            </td>
+                                        </tr>
+                                        <?php else: ?>
+                                            <?php foreach ($turmas as $turma): ?>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                            <i class="bi bi-collection"></i>
+                                                        </div>
+                                                        <div>
+                                                            <strong><?php echo htmlspecialchars($turma['nome']); ?></strong>
+                                                            <br><small class="text-muted">ID: <?php echo $turma['id']; ?></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <small><?php echo htmlspecialchars($turma['serie'] ?? '-'); ?></small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-dark"><?php echo htmlspecialchars($turma['ano_letivo'] ?? '-'); ?></span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary">
+                                                        <?php echo htmlspecialchars($turma['periodo'] ?? 'Integral'); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <?php 
+                                                    // Contar alunos da turma
+                                                    $alunosDaTurma = array_filter($alunos, function($a) use ($turma) {
+                                                        return isset($a['turma_id']) && $a['turma_id'] == $turma['id'];
+                                                    });
+                                                    $qtdAlunos = count($alunosDaTurma);
+                                                    ?>
+                                                    <span class="badge bg-success"><?php echo $qtdAlunos; ?> aluno<?php echo $qtdAlunos != 1 ? 's' : ''; ?></span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-<?php echo $turma['ativo'] ? 'success' : 'danger'; ?>">
+                                                        <?php echo $turma['ativo'] ? 'Ativa' : 'Inativa'; ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/turmas/' . $turma['id'] . '/edit'); ?>" 
+                                                       class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -425,55 +845,6 @@ function toggleStatus(escolaId, novoStatus) {
             console.error('Erro:', error);
             alert('Erro ao processar solicitação');
         });
-    }
-}
-
-function filtrarUsuarios(tipo) {
-    // Atualizar botões ativos
-    document.querySelectorAll('.btn-group button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Encontrar o botão correto e ativá-lo
-    const botoes = document.querySelectorAll('.btn-group button');
-    botoes.forEach(btn => {
-        if (btn.textContent.trim().toLowerCase() === tipo.toLowerCase() || 
-            (tipo === 'todos' && btn.textContent.trim().toLowerCase() === 'todos')) {
-            btn.classList.add('active');
-        }
-    });
-    
-    // Filtrar linhas da tabela
-    const linhas = document.querySelectorAll('tbody tr');
-    
-    linhas.forEach(linha => {
-        if (linha.querySelector('td[colspan]')) return; // Pular linha de "nenhum usuário"
-        
-        const tipoUsuario = linha.getAttribute('data-tipo');
-        
-        if (tipo === 'todos' || tipoUsuario === tipo) {
-            linha.style.display = '';
-        } else {
-            linha.style.display = 'none';
-        }
-    });
-    
-    // Mostrar/esconder mensagem de "nenhum usuário" se necessário
-    const mensagemVazia = document.querySelector('tbody tr td[colspan]');
-    if (mensagemVazia) {
-        const linhasVisiveis = Array.from(linhas).filter(linha => 
-            linha.style.display !== 'none' && !linha.querySelector('td[colspan]')
-        );
-        
-        if (linhasVisiveis.length === 0 && tipo !== 'todos') {
-            mensagemVazia.parentElement.style.display = '';
-            mensagemVazia.textContent = `Nenhum ${tipo} encontrado`;
-        } else if (linhasVisiveis.length === 0) {
-            mensagemVazia.parentElement.style.display = '';
-            mensagemVazia.textContent = 'Nenhum usuário encontrado';
-        } else {
-            mensagemVazia.parentElement.style.display = 'none';
-        }
     }
 }
 
