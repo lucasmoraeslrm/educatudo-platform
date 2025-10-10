@@ -481,11 +481,11 @@ ob_start();
                                                 <td><?php echo htmlspecialchars($prof['email'] ?? '-'); ?></td>
                                                 <td>
                                                     <?php 
-                                                    $materias = !empty($prof['materias']) ? json_decode($prof['materias'], true) : [];
-                                                    if (!empty($materias)) {
-                                                        echo '<small>' . htmlspecialchars(implode(', ', array_slice($materias, 0, 2))) . '</small>';
-                                                        if (count($materias) > 2) {
-                                                            echo ' <span class="badge bg-secondary">+' . (count($materias) - 2) . '</span>';
+                                                    $materiasProf = !empty($prof['materias']) ? json_decode($prof['materias'], true) : [];
+                                                    if (!empty($materiasProf)) {
+                                                        echo '<small>' . htmlspecialchars(implode(', ', array_slice($materiasProf, 0, 2))) . '</small>';
+                                                        if (count($materiasProf) > 2) {
+                                                            echo ' <span class="badge bg-secondary">+' . (count($materiasProf) - 2) . '</span>';
                                                         }
                                                     } else {
                                                         echo '<span class="text-muted">-</span>';
@@ -689,19 +689,6 @@ ob_start();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php 
-                                        // DEBUG: Verificar o que está chegando
-                                        error_log("=== DEBUG VIEW MATERIAS ===");
-                                        error_log("Materias isset: " . (isset($materias) ? 'sim' : 'não'));
-                                        error_log("Materias is_array: " . (is_array($materias) ? 'sim' : 'não'));
-                                        error_log("Materias count: " . (isset($materias) && is_array($materias) ? count($materias) : '0'));
-                                        error_log("Materias value: " . json_encode($materias ?? 'não definido'));
-                                        
-                                        // Garantir que $materias seja sempre um array válido
-                                        if (!isset($materias) || !is_array($materias)) {
-                                            $materias = [];
-                                        }
-                                        ?>
                                         <?php if (empty($materias)): ?>
                                         <tr>
                                             <td colspan="4" class="text-center text-muted py-4">

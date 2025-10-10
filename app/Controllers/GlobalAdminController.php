@@ -468,15 +468,6 @@ class GlobalAdminController extends Controller
         ]);
     }
     
-    public function exercicios()
-    {
-        $this->requireAuth();
-        
-        return $this->view('global_admin.exercicios', [
-            'title' => 'Exercícios - Admin Global'
-        ]);
-    }
-    
     public function servidor()
     {
         $this->requireAuth();
@@ -2104,5 +2095,328 @@ class GlobalAdminController extends Controller
         }
         
         return $errors;
+    }
+    
+    // ==================== EXERCÍCIOS ====================
+    
+    public function exercicios()
+    {
+        $this->requireAuth();
+        
+        $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+        $listas = $listaModel->getAll();
+        $stats = $listaModel->getEstatisticas();
+        
+        return $this->view('global_admin.exercicios', [
+            'title' => 'Exercícios - Admin Global',
+            'user' => $this->getUser(),
+            'listas' => $listas,
+            'stats' => $stats
+        ]);
+    }
+    
+    public function importExerciciosForm()
+    {
+        $this->requireAuth();
+        
+        return $this->view('global_admin.exercicios-import', [
+            'title' => 'Importar Exercícios - Admin Global',
+            'user' => $this->getUser()
+        ]);
+    }
+    
+    public function importExercicios()
+    {
+        $this->requireAuth();
+        
+        try {
+            // Limpar qualquer output anterior
+            if (ob_get_level()) {
+                ob_clean();
+            }
+            
+            $jsonData = $this->request->getJsonBody();
+            
+            // Log para debug
+            error_log("JSON recebido: " . json_encode($jsonData));
+            
+            if (!isset($jsonData['exercicios']) || !is_array($jsonData['exercicios'])) {
+                error_log("Formato JSON inválido - exercicios não encontrado ou não é array");
+                return $this->json(['success' => false, 'message' => 'Formato JSON inválido']);
+            }
+            
+            if (empty($jsonData['exercicios'])) {
+                return $this->json(['success' => false, 'message' => 'Nenhuma lista encontrada no JSON']);
+            }
+            
+            $this->db->beginTransaction();
+            
+            $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+            $questaoModel = new \Educatudo\Models\Questao($this->db);
+            
+            $importedListas = 0;
+            $importedQuestoes = 0;
+            
+            foreach ($jsonData['exercicios'] as $exercicio) {
+                // Criar lista
+                $listaId = $listaModel->create([
+                    'titulo' => $exercicio['titulo_lista'],
+                    'materia' => $exercicio['materia'],
+                    'serie' => $exercicio['serie'],
+                    'nivel_dificuldade' => $exercicio['nivel_dificuldade'],
+                    'total_questoes' => count($exercicio['questoes'])
+                ]);
+                
+                if (!$listaId) {
+                    throw new \Exception('Erro ao criar lista');
+                }
+                
+                $importedListas++;
+                
+                // Criar questões
+                foreach ($exercicio['questoes'] as $index => $questao) {
+                    $questaoData = [
+                        'lista_id' => $listaId,
+                        'ordem' => $index + 1,
+                        'pergunta' => $questao['pergunta'],
+                        'tipo' => 'multipla_escolha',
+                        'resposta_correta' => $questao['resposta_correta'],
+                        'explicacao' => $questao['explicacao'] ?? null
+                    ];
+                    
+                    $questaoId = $questaoModel->createWithAlternativas(
+                        $questaoData,
+                        $questao['alternativas']
+                    );
+                    
+                    if (!$questaoId) {
+                        throw new \Exception('Erro ao criar questão');
+                    }
+                    
+                    $importedQuestoes++;
+                }
+            }
+            
+            $this->db->commit();
+            
+            return $this->json([
+                'success' => true,
+                'imported_listas' => $importedListas,
+                'imported_questoes' => $importedQuestoes
+            ]);
+            
+        } catch (\Exception $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollback();
+            }
+            error_log("Erro ao importar exercícios: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            
+            // Limpar qualquer output
+            if (ob_get_level()) {
+                ob_clean();
+            }
+            
+            return $this->json([
+                'success' => false, 
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+        }
+    }
+    
+    public function createLista()
+    {
+        $this->requireAuth();
+        
+        return $this->view('global_admin.lista-create', [
+            'title' => 'Criar Lista - Admin Global',
+            'user' => $this->getUser()
+        ]);
+    }
+    
+    public function storeLista()
+    {
+        $this->requireAuth();
+        
+        try {
+            $data = $this->request->getJsonBody();
+            
+            $this->db->beginTransaction();
+            
+            $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+            $questaoModel = new \Educatudo\Models\Questao($this->db);
+            
+            // Criar lista
+            $listaId = $listaModel->create([
+                'titulo' => $data['titulo'],
+                'materia' => $data['materia'],
+                'serie' => $data['serie'],
+                'nivel_dificuldade' => $data['nivel_dificuldade'],
+                'total_questoes' => count($data['questoes'] ?? [])
+            ]);
+            
+            if (!$listaId) {
+                throw new \Exception('Erro ao criar lista');
+            }
+            
+            // Criar questões
+            if (!empty($data['questoes'])) {
+                foreach ($data['questoes'] as $index => $questao) {
+                    $questaoData = [
+                        'lista_id' => $listaId,
+                        'ordem' => $index + 1,
+                        'pergunta' => $questao['pergunta'],
+                        'tipo' => $questao['tipo'],
+                        'resposta_correta' => $questao['resposta_correta'] ?? null,
+                        'explicacao' => $questao['explicacao'] ?? null
+                    ];
+                    
+                    $alternativas = [];
+                    if ($questao['tipo'] === 'multipla_escolha' && !empty($questao['alternativas'])) {
+                        $alternativas = $questao['alternativas'];
+                    }
+                    
+                    $questaoId = $questaoModel->createWithAlternativas($questaoData, $alternativas);
+                    
+                    if (!$questaoId) {
+                        throw new \Exception('Erro ao criar questão');
+                    }
+                }
+            }
+            
+            $this->db->commit();
+            
+            return $this->json(['success' => true, 'lista_id' => $listaId]);
+            
+        } catch (\Exception $e) {
+            $this->db->rollback();
+            error_log("Erro ao criar lista: " . $e->getMessage());
+            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    public function showLista(int $id)
+    {
+        $this->requireAuth();
+        
+        $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+        $lista = $listaModel->getWithQuestoes($id);
+        
+        if (!$lista) {
+            return $this->redirect('/admin/exercicios');
+        }
+        
+        return $this->view('global_admin.lista-details', [
+            'title' => 'Detalhes da Lista - Admin Global',
+            'user' => $this->getUser(),
+            'lista' => $lista
+        ]);
+    }
+    
+    public function editLista(int $id)
+    {
+        $this->requireAuth();
+        
+        $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+        $lista = $listaModel->getWithQuestoes($id);
+        
+        if (!$lista) {
+            return $this->redirect('/admin/exercicios');
+        }
+        
+        return $this->view('global_admin.lista-edit', [
+            'title' => 'Editar Lista - Admin Global',
+            'user' => $this->getUser(),
+            'lista' => $lista
+        ]);
+    }
+    
+    public function updateLista(int $id)
+    {
+        $this->requireAuth();
+        
+        try {
+            $data = $this->request->getJsonBody();
+            
+            $this->db->beginTransaction();
+            
+            $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+            $questaoModel = new \Educatudo\Models\Questao($this->db);
+            
+            // Atualizar lista
+            $updated = $listaModel->update($id, [
+                'titulo' => $data['titulo'],
+                'materia' => $data['materia'],
+                'serie' => $data['serie'],
+                'nivel_dificuldade' => $data['nivel_dificuldade']
+            ]);
+            
+            if (!$updated) {
+                throw new \Exception('Erro ao atualizar lista');
+            }
+            
+            // Deletar questões antigas
+            $sql = "DELETE FROM questoes WHERE lista_id = :lista_id";
+            $this->db->query($sql, ['lista_id' => $id]);
+            
+            // Criar novas questões
+            if (!empty($data['questoes'])) {
+                foreach ($data['questoes'] as $index => $questao) {
+                    $questaoData = [
+                        'lista_id' => $id,
+                        'ordem' => $index + 1,
+                        'pergunta' => $questao['pergunta'],
+                        'tipo' => $questao['tipo'],
+                        'resposta_correta' => $questao['resposta_correta'] ?? null,
+                        'explicacao' => $questao['explicacao'] ?? null
+                    ];
+                    
+                    $alternativas = [];
+                    if ($questao['tipo'] === 'multipla_escolha' && !empty($questao['alternativas'])) {
+                        $alternativas = $questao['alternativas'];
+                    }
+                    
+                    $questaoId = $questaoModel->createWithAlternativas($questaoData, $alternativas);
+                    
+                    if (!$questaoId) {
+                        throw new \Exception('Erro ao criar questão');
+                    }
+                }
+            }
+            
+            // Atualizar total de questões
+            $listaModel->updateTotalQuestoes($id);
+            
+            $this->db->commit();
+            
+            return $this->json(['success' => true]);
+            
+        } catch (\Exception $e) {
+            $this->db->rollback();
+            error_log("Erro ao atualizar lista: " . $e->getMessage());
+            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    public function deleteLista(int $id)
+    {
+        $this->requireAuth();
+        
+        try {
+            $listaModel = new \Educatudo\Models\ListaExercicio($this->db);
+            $deleted = $listaModel->delete($id);
+            
+            if ($deleted) {
+                return $this->json(['success' => true]);
+            } else {
+                return $this->json(['success' => false, 'message' => 'Erro ao excluir lista']);
+            }
+            
+        } catch (\Exception $e) {
+            error_log("Erro ao excluir lista: " . $e->getMessage());
+            return $this->json(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 }

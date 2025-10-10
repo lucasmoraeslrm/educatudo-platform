@@ -1,6 +1,7 @@
 <?php
 // Bootstrap da aplicação
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/app/helpers.php';
 
 use Educatudo\Core\{App, Router, Database, Request, Response};
 
@@ -82,7 +83,29 @@ $router->post('/admin/escolas/{escolaId}/pais/{paiId}', 'GlobalAdminController@u
 $router->delete('/admin/escolas/{escolaId}/pais/{paiId}', 'GlobalAdminController@deletePai')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 $router->get('/admin/usuarios', 'GlobalAdminController@usuarios')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Rotas de Exercícios (Banco de Questões)
+// IMPORTANTE: Rotas específicas ANTES de rotas com parâmetros
 $router->get('/admin/exercicios', 'GlobalAdminController@exercicios')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Import
+$router->get('/admin/exercicios/import', 'GlobalAdminController@importExerciciosForm')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/import', 'GlobalAdminController@importExercicios')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Listas - Create (deve vir ANTES de {id})
+$router->get('/admin/exercicios/listas/create', 'GlobalAdminController@createLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/listas', 'GlobalAdminController@storeLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Listas - Edit (deve vir ANTES de {id})
+$router->get('/admin/exercicios/listas/{id}/edit', 'GlobalAdminController@editLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->put('/admin/exercicios/listas/{id}', 'GlobalAdminController@updateLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/listas/{id}/update', 'GlobalAdminController@updateLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Listas - Show e Delete (com parâmetros, vêm por último)
+$router->get('/admin/exercicios/listas/{id}', 'GlobalAdminController@showLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->delete('/admin/exercicios/listas/{id}', 'GlobalAdminController@deleteLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/listas/{id}/delete', 'GlobalAdminController@deleteLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
 $router->get('/admin/servidor', 'GlobalAdminController@servidor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas do Admin da Escola

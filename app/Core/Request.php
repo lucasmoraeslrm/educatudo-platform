@@ -143,4 +143,15 @@ class Request
 
         return $errors;
     }
+
+    public function getJsonBody(): array
+    {
+        $json = file_get_contents('php://input');
+        if (empty($json)) {
+            return [];
+        }
+        
+        $data = json_decode($json, true);
+        return is_array($data) ? $data : [];
+    }
 }
