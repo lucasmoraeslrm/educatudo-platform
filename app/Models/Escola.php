@@ -69,6 +69,7 @@ class Escola extends Model
 
     public function getEstatisticas(): array
     {
+        // Estatísticas de escolas
         $sql = "SELECT 
                     COUNT(*) as total,
                     SUM(CASE WHEN ativa = 1 THEN 1 ELSE 0 END) as ativas,
@@ -78,7 +79,7 @@ class Escola extends Model
                     SUM(CASE WHEN plano = 'premium' THEN 1 ELSE 0 END) as plano_premium
                 FROM {$this->table}";
         
-        return $this->db->fetch($sql) ?: [
+        $estatisticas = $this->db->fetch($sql) ?: [
             'total' => 0,
             'ativas' => 0,
             'inativas' => 0,
@@ -86,6 +87,18 @@ class Escola extends Model
             'plano_avancado' => 0,
             'plano_premium' => 0
         ];
+        
+        // Contar total de usuários
+        $sqlUsuarios = "SELECT COUNT(*) as total FROM usuarios";
+        $usuarios = $this->db->fetch($sqlUsuarios);
+        $estatisticas['total_usuarios'] = $usuarios['total'] ?? 0;
+        
+        // Renomear para compatibilidade
+        $estatisticas['escolas_ativas'] = $estatisticas['ativas'];
+        $estatisticas['planos_premium'] = $estatisticas['plano_premium'];
+        $estatisticas['usuarios_total'] = $estatisticas['total_usuarios'];
+        
+        return $estatisticas;
     }
 
     public function getConfiguracoes(int $id): array

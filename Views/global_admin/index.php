@@ -28,7 +28,7 @@ ob_start();
             <div class="stat-card" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="number"><?php echo $estatisticas['total_escolas'] ?? '2'; ?></div>
+                        <div class="number"><?php echo $estatisticas['total'] ?? '2'; ?></div>
                         <div class="label">Total de Escolas</div>
                     </div>
                     <div class="icon">
@@ -140,60 +140,60 @@ ob_start();
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                                <i class="bi bi-building"></i>
+                                <?php if (!empty($escolas)): ?>
+                                    <?php 
+                                    $cores = ['bg-primary', 'bg-info', 'bg-success', 'bg-warning', 'bg-danger'];
+                                    $planoColors = [
+                                        'basico' => 'warning',
+                                        'avancado' => 'info',
+                                        'premium' => 'success'
+                                    ];
+                                    foreach ($escolas as $index => $escola): 
+                                        $cor = $cores[$index % count($cores)];
+                                        $planoColor = $planoColors[$escola['plano']] ?? 'secondary';
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="<?php echo $cor; ?> text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-building"></i>
+                                                </div>
+                                                <div>
+                                                    <strong><?php echo htmlspecialchars($escola['nome']); ?></strong>
+                                                    <br><small class="text-muted"><?php echo htmlspecialchars($escola['subdominio']); ?>.educatudo.com</small>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <strong>Escola Demo</strong>
-                                                <br><small class="text-muted">demo.educatudo.com</small>
+                                        </td>
+                                        <td><code><?php echo htmlspecialchars($escola['subdominio']); ?></code></td>
+                                        <td><span class="badge bg-<?php echo $planoColor; ?>"><?php echo ucfirst($escola['plano']); ?></span></td>
+                                        <td><span class="badge bg-<?php echo $escola['ativa'] ? 'success' : 'danger'; ?>"><?php echo $escola['ativa'] ? 'Ativa' : 'Inativa'; ?></span></td>
+                                        <td>
+                                            <?php 
+                                            $totalUsuarios = $escola['total_usuarios'] ?? 0;
+                                            echo $totalUsuarios . ' ' . ($totalUsuarios === 1 ? 'usuário' : 'usuários'); 
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id']); ?>" class="btn btn-sm btn-outline-primary" title="Visualizar">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="<?php echo $app->url('/admin/escolas/' . $escola['id'] . '/edit'); ?>" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td><code>demo</code></td>
-                                    <td><span class="badge bg-success">Avançado</span></td>
-                                    <td><span class="badge bg-success">Ativa</span></td>
-                                    <td>3 usuários</td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="<?php echo $app->url('/admin/escolas/1'); ?>" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="<?php echo $app->url('/admin/escolas/1/edit'); ?>" class="btn btn-sm btn-outline-secondary">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                                <i class="bi bi-building"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Colégio Exemplo</strong>
-                                                <br><small class="text-muted">colegio.educatudo.com</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><code>colegio</code></td>
-                                    <td><span class="badge bg-warning">Básico</span></td>
-                                    <td><span class="badge bg-success">Ativa</span></td>
-                                    <td>1 usuário</td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="<?php echo $app->url('/admin/escolas/2'); ?>" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="<?php echo $app->url('/admin/escolas/2/edit'); ?>" class="btn btn-sm btn-outline-secondary">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted py-4">
+                                            <i class="bi bi-building" style="font-size: 2rem; opacity: 0.3;"></i>
+                                            <br><br>
+                                            Nenhuma escola cadastrada
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
                     </div>

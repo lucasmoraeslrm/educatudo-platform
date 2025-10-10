@@ -1,6 +1,7 @@
 <?php
 // Bootstrap da aplicação
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/app/helpers.php';
 
 use Educatudo\Core\{App, Router, Database, Request, Response};
 
@@ -32,12 +33,21 @@ $router->post('/admin/escolas', 'GlobalAdminController@storeEscola')->middleware
 $router->get('/admin/escolas/{id}', 'GlobalAdminController@showEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->get('/admin/escolas/{id}/edit', 'GlobalAdminController@editEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->put('/admin/escolas/{id}', 'GlobalAdminController@updateEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{id}/update', 'GlobalAdminController@updateEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Rotas CRUD de Admins da Escola
+$router->get('/admin/escolas/{escolaId}/usuarios/create', 'GlobalAdminController@createAdminEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/usuarios', 'GlobalAdminController@storeAdminEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->get('/admin/escolas/{escolaId}/usuarios/{usuarioId}/edit', 'GlobalAdminController@editAdminEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/usuarios/{usuarioId}', 'GlobalAdminController@updateAdminEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->get('/admin/escolas/{escolaId}/usuarios/{usuarioId}/delete', 'GlobalAdminController@deleteAdminEscola')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas CRUD de Professores
 $router->get('/admin/escolas/{escolaId}/professores/create', 'GlobalAdminController@createProfessor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->post('/admin/escolas/{escolaId}/professores', 'GlobalAdminController@storeProfessor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->get('/admin/escolas/{escolaId}/professores/{professorId}/edit', 'GlobalAdminController@editProfessor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->put('/admin/escolas/{escolaId}/professores/{professorId}', 'GlobalAdminController@updateProfessor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/professores/{professorId}', 'GlobalAdminController@updateProfessor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->delete('/admin/escolas/{escolaId}/professores/{professorId}', 'GlobalAdminController@deleteProfessor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas CRUD de Matérias
@@ -45,6 +55,7 @@ $router->get('/admin/escolas/{escolaId}/materias/create', 'GlobalAdminController
 $router->post('/admin/escolas/{escolaId}/materias', 'GlobalAdminController@storeMateria')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->get('/admin/escolas/{escolaId}/materias/{materiaId}/edit', 'GlobalAdminController@editMateria')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->put('/admin/escolas/{escolaId}/materias/{materiaId}', 'GlobalAdminController@updateMateria')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/materias/{materiaId}', 'GlobalAdminController@updateMateria')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->delete('/admin/escolas/{escolaId}/materias/{materiaId}', 'GlobalAdminController@deleteMateria')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas CRUD de Turmas
@@ -52,6 +63,7 @@ $router->get('/admin/escolas/{escolaId}/turmas/create', 'GlobalAdminController@c
 $router->post('/admin/escolas/{escolaId}/turmas', 'GlobalAdminController@storeTurma')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->get('/admin/escolas/{escolaId}/turmas/{turmaId}/edit', 'GlobalAdminController@editTurma')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->put('/admin/escolas/{escolaId}/turmas/{turmaId}', 'GlobalAdminController@updateTurma')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/turmas/{turmaId}', 'GlobalAdminController@updateTurma')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->delete('/admin/escolas/{escolaId}/turmas/{turmaId}', 'GlobalAdminController@deleteTurma')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas CRUD de Alunos
@@ -59,6 +71,7 @@ $router->get('/admin/escolas/{escolaId}/alunos/create', 'GlobalAdminController@c
 $router->post('/admin/escolas/{escolaId}/alunos', 'GlobalAdminController@storeAluno')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->get('/admin/escolas/{escolaId}/alunos/{alunoId}/edit', 'GlobalAdminController@editAluno')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->put('/admin/escolas/{escolaId}/alunos/{alunoId}', 'GlobalAdminController@updateAluno')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/alunos/{alunoId}', 'GlobalAdminController@updateAluno')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->delete('/admin/escolas/{escolaId}/alunos/{alunoId}', 'GlobalAdminController@deleteAluno')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas CRUD de Pais
@@ -66,10 +79,33 @@ $router->get('/admin/escolas/{escolaId}/pais/create', 'GlobalAdminController@cre
 $router->post('/admin/escolas/{escolaId}/pais', 'GlobalAdminController@storePai')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->get('/admin/escolas/{escolaId}/pais/{paiId}/edit', 'GlobalAdminController@editPai')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->put('/admin/escolas/{escolaId}/pais/{paiId}', 'GlobalAdminController@updatePai')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/escolas/{escolaId}/pais/{paiId}', 'GlobalAdminController@updatePai')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 $router->delete('/admin/escolas/{escolaId}/pais/{paiId}', 'GlobalAdminController@deletePai')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 $router->get('/admin/usuarios', 'GlobalAdminController@usuarios')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Rotas de Exercícios (Banco de Questões)
+// IMPORTANTE: Rotas específicas ANTES de rotas com parâmetros
 $router->get('/admin/exercicios', 'GlobalAdminController@exercicios')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Import
+$router->get('/admin/exercicios/import', 'GlobalAdminController@importExerciciosForm')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/import', 'GlobalAdminController@importExercicios')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Listas - Create (deve vir ANTES de {id})
+$router->get('/admin/exercicios/listas/create', 'GlobalAdminController@createLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/listas', 'GlobalAdminController@storeLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Listas - Edit (deve vir ANTES de {id})
+$router->get('/admin/exercicios/listas/{id}/edit', 'GlobalAdminController@editLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->put('/admin/exercicios/listas/{id}', 'GlobalAdminController@updateLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/listas/{id}/update', 'GlobalAdminController@updateLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
+// Listas - Show e Delete (com parâmetros, vêm por último)
+$router->get('/admin/exercicios/listas/{id}', 'GlobalAdminController@showLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->delete('/admin/exercicios/listas/{id}', 'GlobalAdminController@deleteLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+$router->post('/admin/exercicios/listas/{id}/delete', 'GlobalAdminController@deleteLista')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
+
 $router->get('/admin/servidor', 'GlobalAdminController@servidor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas do Admin da Escola

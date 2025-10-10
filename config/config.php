@@ -17,19 +17,26 @@ function detectBasePath() {
         return ''; // Sem basePath em produção
     }
     
-    // Se estiver rodando na raiz do servidor local
+    // Para localhost, verificar se está em subdiretório
+    // Se SCRIPT_NAME é /index.php, está na raiz
+    // Se é /educatudo/index.php, está no subdiretório
+    if ($scriptName === '/index.php' || $scriptName === '/public/index.php') {
+        return ''; // Raiz do servidor
+    }
+    
+    // Se estiver rodando em subdiretório /educatudo
     if (strpos($scriptName, '/educatudo') !== false) {
         return '/educatudo';
     }
     
-    // Se estiver rodando em subdiretório
+    // Extrair basePath do SCRIPT_NAME
     $pathInfo = pathinfo($scriptName);
     if ($pathInfo['dirname'] !== '/' && $pathInfo['dirname'] !== '.') {
         return $pathInfo['dirname'];
     }
     
-    // Padrão para desenvolvimento local
-    return '/educatudo';
+    // Padrão: sem basePath (raiz)
+    return '';
 }
 
 // Detectar URL base automaticamente

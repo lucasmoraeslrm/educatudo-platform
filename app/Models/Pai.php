@@ -72,4 +72,43 @@ class Pai extends Model
             'inativos' => 0
         ];
     }
+
+    // Métodos para gerenciar relacionamento com alunos
+    public function getAlunos(int $paiId): array
+    {
+        $sql = "SELECT a.id, a.ra, u.nome, a.serie, a.ativo 
+                FROM aluno_pai ap
+                JOIN alunos a ON ap.aluno_id = a.id
+                JOIN usuarios u ON a.usuario_id = u.id
+                WHERE ap.pai_id = :pai_id
+                ORDER BY u.nome";
+        return $this->db->fetchAll($sql, ['pai_id' => $paiId]);
+    }
+
+    public function addAluno(int $paiId, int $alunoId): bool
+    {
+        $sql = "INSERT INTO aluno_pai (pai_id, aluno_id) VALUES (:pai_id, :aluno_id)";
+        return $this->db->query($sql, ['pai_id' => $paiId, 'aluno_id' => $alunoId]) !== false;
+    }
+
+    public function removeAluno(int $paiId, int $alunoId): bool
+    {
+        $sql = "DELETE FROM aluno_pai WHERE pai_id = :pai_id AND aluno_id = :aluno_id";
+        return $this->db->query($sql, ['pai_id' => $paiId, 'aluno_id' => $alunoId]) !== false;
+    }
+
+    public function syncAlunos(int $paiId, array $alunosIds): bool
+    {
+        // Remove todos os alunos atuais
+        $this->db->query("DELETE FROM aluno_pai WHERE pai_id = :pai_id", ['pai_id' => $paiId]);
+        
+        // Adiciona os novos alunos
+        if (!empty($alunosIds)) {
+            foreach ($alunosIds as $alunoId) {
+                $this->addAluno($paiId, $alunoId);
+            }
+        }
+        
+        return true;
+    }
 }

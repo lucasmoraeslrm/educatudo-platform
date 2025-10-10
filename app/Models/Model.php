@@ -48,7 +48,7 @@ abstract class Model
         return $this->db->fetchAll($sql, $params);
     }
 
-    public function create(array $data): bool
+    public function create(array $data)
     {
         $fillableData = array_intersect_key($data, array_flip($this->fillable));
         
@@ -57,7 +57,13 @@ abstract class Model
         
         $sql = "INSERT INTO {$this->table} (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
         
-        return $this->db->query($sql, $fillableData) !== false;
+        $result = $this->db->query($sql, $fillableData);
+        
+        if ($result !== false) {
+            return (int) $this->db->lastInsertId();
+        }
+        
+        return false;
     }
 
     public function update($id, array $data): bool

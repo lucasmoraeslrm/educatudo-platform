@@ -77,6 +77,18 @@ CREATE TABLE pais (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+-- Tabela: aluno_pai (relacionamento muitos-para-muitos)
+-- Um pai pode ter vários filhos e um aluno pode ter vários responsáveis
+CREATE TABLE aluno_pai (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    aluno_id INT NOT NULL,
+    pai_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE,
+    FOREIGN KEY (pai_id) REFERENCES pais(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_aluno_pai (aluno_id, pai_id)
+);
+
 -- Tabela: turmas
 -- Cada escola tem suas próprias turmas independentes
 CREATE TABLE turmas (
@@ -123,17 +135,67 @@ CREATE TABLE jornadas (
     INDEX idx_turma (turma_id)
 );
 
--- Tabela: exercicios
+-- Tabela: exercicios (questões dissertativas/personalizadas nas jornadas)
 CREATE TABLE exercicios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     jornada_id INT NOT NULL,
     enunciado TEXT NOT NULL,
     resposta TEXT,
     tipo ENUM('multipla_escolha', 'dissertativa') DEFAULT 'multipla_escolha',
-    gerado_ia BOOLEAN DEFAULT FALSE,
-    aprovado BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (jornada_id) REFERENCES jornadas(id) ON DELETE CASCADE,
     INDEX idx_jornada (jornada_id)
+);
+
+-- Tabela: listas_exercicios (banco global de listas)
+CREATE TABLE listas_exercicios (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(255) NOT NULL,
+    materia VARCHAR(100) NOT NULL,
+    serie VARCHAR(100) NOT NULL,
+    nivel_dificuldade ENUM('Fácil', 'Médio', 'Difícil') NOT NULL,
+    total_questoes INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_materia (materia),
+    INDEX idx_serie (serie),
+    INDEX idx_nivel (nivel_dificuldade)
+);
+
+-- Tabela: questoes (questões do banco global)
+CREATE TABLE questoes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    lista_id INT NOT NULL,
+    ordem INT NOT NULL,
+    pergunta TEXT NOT NULL,
+    tipo ENUM('multipla_escolha', 'dissertativa') DEFAULT 'multipla_escolha',
+    resposta_correta VARCHAR(1),
+    explicacao TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (lista_id) REFERENCES listas_exercicios(id) ON DELETE CASCADE,
+    INDEX idx_lista (lista_id)
+);
+
+-- Tabela: alternativas (alternativas para questões de múltipla escolha)
+CREATE TABLE alternativas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    questao_id INT NOT NULL,
+    letra VARCHAR(1) NOT NULL,
+    texto TEXT NOT NULL,
+    FOREIGN KEY (questao_id) REFERENCES questoes(id) ON DELETE CASCADE,
+    INDEX idx_questao (questao_id)
+);
+
+-- Tabela: jornada_questoes (relacionamento jornadas com questões do banco)
+CREATE TABLE jornada_questoes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    jornada_id INT NOT NULL,
+    questao_id INT NOT NULL,
+    ordem INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (jornada_id) REFERENCES jornadas(id) ON DELETE CASCADE,
+    FOREIGN KEY (questao_id) REFERENCES questoes(id) ON DELETE CASCADE,
+    INDEX idx_jornada (jornada_id),
+    INDEX idx_questao (questao_id)
 );
 
 -- Tabela: redacoes
@@ -219,21 +281,21 @@ INSERT INTO alunos (usuario_id, ra, serie, data_nasc) VALUES
 -- (1, '2º B', 2024, '2º Ano'),
 -- (2, '3º A', 2024, '3º Ano');
 
--- Matérias da Escola Demo (ID 1) - comentado
--- INSERT INTO materias (escola_id, nome, professor_id) VALUES
--- (1, 'Matemática', 1),
--- (1, 'Português', NULL),
--- (1, 'História', NULL),
--- (1, 'Geografia', NULL),
--- (1, 'Ciências', NULL);
+-- Matérias da Escola Demo (ID 1)
+INSERT INTO materias (escola_id, nome, professor_id) VALUES
+(1, 'Matemática', 1),
+(1, 'Português', NULL),
+(1, 'História', NULL),
+(1, 'Geografia', NULL),
+(1, 'Ciências', NULL);
 
--- Matérias do Colégio Exemplo (ID 2) - comentado
--- INSERT INTO materias (escola_id, nome, professor_id) VALUES
--- (2, 'Matemática', NULL),
--- (2, 'Física', NULL),
--- (2, 'Química', NULL),
--- (2, 'Biologia', NULL),
--- (2, 'Inglês', NULL);
+-- Matérias do Colégio Exemplo (ID 2)
+INSERT INTO materias (escola_id, nome, professor_id) VALUES
+(2, 'Matemática', NULL),
+(2, 'Física', NULL),
+(2, 'Química', NULL),
+(2, 'Biologia', NULL),
+(2, 'Inglês', NULL);
 
 -- Assinatura exemplo
 INSERT INTO assinaturas (escola_id, plano, data_inicio, data_fim) VALUES

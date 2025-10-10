@@ -57,7 +57,7 @@ ob_start();
             <div class="stat-card" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="number"><?php echo $estatisticas['premium'] ?? count(array_filter($escolas, fn($e) => ($e['plano'] ?? '') === 'premium')); ?></div>
+                        <div class="number"><?php echo $estatisticas['plano_premium'] ?? count(array_filter($escolas, fn($e) => ($e['plano'] ?? '') === 'premium')); ?></div>
                         <div class="label">Planos Premium</div>
                     </div>
                     <div class="icon">
@@ -195,10 +195,15 @@ ob_start();
                                         </td>
                                         <td><?php echo htmlspecialchars($escola['cnpj'] ?? 'N/A'); ?></td>
                                         <td>
-                                            <span class="badge bg-<?php 
-                                                echo $escola['plano'] === 'premium' ? 'warning' : 
-                                                    ($escola['plano'] === 'avancado' ? 'info' : 'secondary'); 
-                                            ?>">
+                                            <?php
+                                            $planoColors = [
+                                                'basico' => 'warning',
+                                                'avancado' => 'info',
+                                                'premium' => 'success'
+                                            ];
+                                            $planoColor = $planoColors[$escola['plano']] ?? 'warning';
+                                            ?>
+                                            <span class="badge bg-<?php echo $planoColor; ?>">
                                                 <?php echo ucfirst($escola['plano'] ?? 'básico'); ?>
                                             </span>
                                         </td>
