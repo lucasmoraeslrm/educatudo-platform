@@ -14,7 +14,7 @@ ob_start();
                     <p class="text-muted mb-0">Gerencie os professores da escola</p>
                 </div>
                 <div>
-                    <a href="<?php echo $app->url('/admin-escola/professores/create'); ?>" class="btn btn-primary">
+                    <a href="<?php echo $app->url('/escola/professores/create'); ?>" class="btn btn-primary">
                         <i class="bi bi-plus-circle"></i> Novo Professor
                     </a>
                 </div>
@@ -56,7 +56,7 @@ ob_start();
                                         </div>
                                         <h5>Nenhum professor cadastrado</h5>
                                         <p class="mb-3">Comece adicionando professores à escola.</p>
-                                        <a href="<?php echo $app->url('/admin-escola/professores/create'); ?>" class="btn btn-primary">
+                                        <a href="<?php echo $app->url('/escola/professores/create'); ?>" class="btn btn-primary">
                                             <i class="bi bi-plus-circle"></i> Adicionar Primeiro Professor
                                         </a>
                                     </td>
@@ -107,7 +107,7 @@ ob_start();
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="<?php echo $app->url('/admin-escola/professores/' . $professor['usuario_id'] . '/edit'); ?>" 
+                                                <a href="<?php echo $app->url('/escola/professores/' . $professor['usuario_id'] . '/edit'); ?>" 
                                                    class="btn btn-sm btn-outline-primary" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -134,7 +134,7 @@ ob_start();
 function toggleStatus(professorId, novoStatus) {
     const acao = novoStatus ? 'ativar' : 'desativar';
     if (confirm(`Tem certeza que deseja ${acao} este professor?`)) {
-        fetch(`<?php echo $app->url('/admin-escola/professores/' . $professorId . '/delete'); ?>`, {
+        fetch(`<?php echo $app->url('/escola/professores/' . $professor['id'] . '/delete'); ?>`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -160,5 +160,5 @@ function toggleStatus(professorId, novoStatus) {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../layouts/admin-global.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

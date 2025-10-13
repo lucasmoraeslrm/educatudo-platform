@@ -13,7 +13,8 @@ class SuperAdminMiddleware
             return false;
         }
 
-        $db = Database::getInstance();
+        $app = \Educatudo\Core\App::getInstance();
+        $db = Database::getInstance($app);
         $sql = "SELECT tipo FROM usuarios WHERE id = :id";
         $user = $db->fetch($sql, ['id' => $_SESSION['user_id']]);
 

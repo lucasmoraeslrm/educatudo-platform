@@ -28,7 +28,7 @@ ob_start();
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Total de Alunos</h5>
-                            <h2 class="mb-0">1</h2>
+                            <h2 class="mb-0"><?php echo $estatisticas['alunos']['total'] ?? 0; ?></h2>
                         </div>
                         <div class="align-self-center">
                             <i class="bi bi-people" style="font-size: 2rem;"></i>
@@ -44,7 +44,7 @@ ob_start();
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5 class="card-title">Professores</h5>
-                            <h2 class="mb-0">1</h2>
+                            <h2 class="mb-0"><?php echo $estatisticas['professores']['total'] ?? 0; ?></h2>
                         </div>
                         <div class="align-self-center">
                             <i class="bi bi-mortarboard" style="font-size: 2rem;"></i>
@@ -59,11 +59,11 @@ ob_start();
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h5 class="card-title">Turmas</h5>
-                            <h2 class="mb-0">1</h2>
+                            <h5 class="card-title">Pais</h5>
+                            <h2 class="mb-0"><?php echo $estatisticas['pais']['total'] ?? 0; ?></h2>
                         </div>
                         <div class="align-self-center">
-                            <i class="bi bi-building" style="font-size: 2rem;"></i>
+                            <i class="bi bi-person-heart" style="font-size: 2rem;"></i>
                         </div>
                     </div>
                 </div>
@@ -75,11 +75,46 @@ ob_start();
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h5 class="card-title">Matérias</h5>
-                            <h2 class="mb-0">1</h2>
+                            <h5 class="card-title">Interações Tudinha</h5>
+                            <h2 class="mb-0"><?php echo $estatisticas['alunos']['total_interacoes_tudinha'] ?? 0; ?></h2>
                         </div>
                         <div class="align-self-center">
-                            <i class="bi bi-book" style="font-size: 2rem;"></i>
+                            <i class="bi bi-chat-dots" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda linha de estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Assertividade dos Exercícios</h5>
+                            <h2 class="mb-0"><?php echo $estatisticas['alunos']['assertividade_exercicios'] ?? 0; ?>%</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-graph-up" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">Turmas Ativas</h5>
+                            <h2 class="mb-0"><?php echo $estatisticas['turmas']['ativas'] ?? 0; ?></h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-building" style="font-size: 2rem;"></i>
                         </div>
                     </div>
                 </div>
@@ -97,23 +132,23 @@ ob_start();
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-3">
-                            <a href="<?php echo $basePath; ?>/admin-escola/alunos" class="btn btn-primary w-100">
+                            <a href="<?php echo $basePath; ?>/escola/alunos" class="btn btn-primary w-100">
                                 <i class="bi bi-people"></i> Gerenciar Alunos
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="<?php echo $basePath; ?>/admin-escola/professores" class="btn btn-success w-100">
+                            <a href="<?php echo $basePath; ?>/escola/professores" class="btn btn-success w-100">
                                 <i class="bi bi-mortarboard"></i> Gerenciar Professores
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="<?php echo $basePath; ?>/admin-escola/turmas" class="btn btn-info w-100">
-                                <i class="bi bi-building"></i> Gerenciar Turmas
+                            <a href="<?php echo $basePath; ?>/escola/configuracoes" class="btn btn-info w-100">
+                                <i class="bi bi-gear"></i> Configurações
                             </a>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <a href="<?php echo $basePath; ?>/admin-escola/materias" class="btn btn-warning w-100">
-                                <i class="bi bi-book"></i> Gerenciar Matérias
+                            <a href="<?php echo $basePath; ?>/escola/relatorios" class="btn btn-warning w-100">
+                                <i class="bi bi-graph-up"></i> Relatórios
                             </a>
                         </div>
                     </div>

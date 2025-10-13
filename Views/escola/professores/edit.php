@@ -6,7 +6,7 @@ $errors = $errors ?? [];
 $old = $old ?? [];
 
 if (!$professor || !$usuario) {
-    header('Location: ' . $app->url('/admin-escola/professores'));
+    header('Location: ' . $app->url('/escola/professores'));
     exit;
 }
 
@@ -25,7 +25,7 @@ ob_start();
                     <p class="text-muted mb-0">Modifique as informações de: <strong><?php echo htmlspecialchars($usuario['nome']); ?></strong></p>
                 </div>
                 <div>
-                    <a href="<?php echo $app->url('/admin-escola/professores'); ?>" class="btn btn-outline-secondary">
+                    <a href="<?php echo $app->url('/escola/professores'); ?>" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -33,7 +33,7 @@ ob_start();
         </div>
     </div>
 
-    <form method="POST" action="<?php echo $app->url('/admin-escola/professores/' . $usuario['id']); ?>">
+    <form method="POST" action="<?php echo $app->url('/escola/professores/' . $usuario['id']); ?>">
         <input type="hidden" name="_method" value="PUT">
         
         <div class="row">
@@ -146,7 +146,7 @@ ob_start();
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-check-circle"></i> Salvar Alterações
                             </button>
-                            <a href="<?php echo $app->url('/admin-escola/professores'); ?>" class="btn btn-outline-secondary">
+                            <a href="<?php echo $app->url('/escola/professores'); ?>" class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
                         </div>
@@ -190,5 +190,5 @@ document.getElementById('codigo_prof').addEventListener('input', function() {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../layouts/admin-global.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

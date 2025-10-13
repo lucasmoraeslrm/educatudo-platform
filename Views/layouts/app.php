@@ -83,7 +83,23 @@ ob_start();
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="<?php echo $app->url('/'); ?>">
-                <?php echo $currentSchool ? $currentSchool . ' - ' : ''; ?>Educatudo
+                <?php if (isset($user) && $user && $user['escola_id']): ?>
+                    <?php 
+                    // Buscar dados da escola
+                    $db = \Educatudo\Core\Database::getInstance($app);
+                    $escolaModel = new \Educatudo\Models\Escola($db);
+                    $escola = $escolaModel->find($user['escola_id']);
+                    if ($escola && !empty($escola['logo_url'])): ?>
+                        <img src="<?php echo htmlspecialchars($escola['logo_url']); ?>" alt="<?php echo htmlspecialchars($escola['nome']); ?>" style="height: 40px; margin-right: 10px;">
+                        <?php echo htmlspecialchars($escola['nome']); ?>
+                    <?php elseif ($escola): ?>
+                        <?php echo htmlspecialchars($escola['nome']); ?>
+                    <?php else: ?>
+                        Educatudo
+                    <?php endif; ?>
+                <?php else: ?>
+                    Educatudo
+                <?php endif; ?>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -99,7 +115,7 @@ ob_start();
                     </li>
                     <?php elseif ($user['tipo'] === 'admin_escola'): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo $app->url('/admin-escola'); ?>">Admin Escola</a>
+                        <a class="nav-link" href="<?php echo $app->url('/escola'); ?>">Admin Escola</a>
                     </li>
                     <?php elseif ($user['tipo'] === 'professor'): ?>
                     <li class="nav-item">
@@ -138,8 +154,64 @@ ob_start();
     </nav>
 
     <!-- Main Content -->
-    <main>
-        <?php echo $content ?? ''; ?>
+    <main class="d-flex">
+        <?php if (isset($user) && $user && $user['tipo'] === 'admin_escola'): ?>
+        <!-- Sidebar para Admin da Escola -->
+        <div class="sidebar bg-dark text-white" style="width: 250px; min-height: calc(100vh - 76px);">
+            <div class="p-3">
+                <h5 class="text-center mb-4">Menu</h5>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola') === 0 && $_SERVER['REQUEST_URI'] === '/escola' ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola'); ?>">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/professores') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/professores'); ?>">
+                            <i class="bi bi-mortarboard"></i> Professores
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/alunos') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/alunos'); ?>">
+                            <i class="bi bi-people"></i> Alunos
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/pais') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/pais'); ?>">
+                            <i class="bi bi-person-heart"></i> Pais
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/jornada') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/jornada'); ?>">
+                            <i class="bi bi-journal-bookmark"></i> Jornada do Aluno
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/usuarios') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/usuarios'); ?>">
+                            <i class="bi bi-person-gear"></i> Usuários/Adm
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/relatorios') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/relatorios'); ?>">
+                            <i class="bi bi-graph-up"></i> Relatórios
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white <?php echo strpos($_SERVER['REQUEST_URI'], '/escola/configuracoes') !== false ? 'active bg-primary' : ''; ?>" href="<?php echo $app->url('/escola/configuracoes'); ?>">
+                            <i class="bi bi-gear"></i> Configuração
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="content flex-grow-1">
+            <?php echo $content ?? ''; ?>
+        </div>
+        <?php else: ?>
+        <div class="content w-100">
+            <?php echo $content ?? ''; ?>
+        </div>
+        <?php endif; ?>
     </main>
 
     <!-- Footer -->

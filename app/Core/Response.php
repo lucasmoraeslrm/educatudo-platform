@@ -69,5 +69,10 @@ class Response
         }
         
         echo $this->content;
+        
+        // Se for redirect, parar execução
+        if (isset($this->headers['Location'])) {
+            exit();
+        }
     }
 }

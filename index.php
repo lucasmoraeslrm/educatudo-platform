@@ -109,11 +109,64 @@ $router->post('/admin/exercicios/listas/{id}/delete', 'GlobalAdminController@del
 $router->get('/admin/servidor', 'GlobalAdminController@servidor')->middleware('AuthMiddleware')->middleware('SuperAdminMiddleware');
 
 // Rotas do Admin da Escola
-$router->get('/admin-escola', 'EscolaController@index')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
-$router->get('/admin-escola/alunos', 'EscolaController@alunos')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
-$router->get('/admin-escola/professores', 'EscolaController@professores')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
-$router->get('/admin-escola/turmas', 'EscolaController@turmas')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
-$router->get('/admin-escola/materias', 'EscolaController@materias')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola', 'EscolaController@index')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/admin-escola', 'EscolaController@redirectToEscola');
+$router->get('/escola/alunos', 'EscolaController@alunos')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/professores', 'EscolaController@professores')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/turmas', 'EscolaController@turmas')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/materias', 'EscolaController@materias')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/usuarios', 'EscolaController@usuarios')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/jornada', 'EscolaController@jornada')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/relatorios', 'EscolaController@relatorios')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/configuracoes', 'EscolaController@configuracoes')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas CRUD de Professores (Admin Escola)
+$router->get('/escola/professores/create', 'EscolaController@createProfessor')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/professores', 'EscolaController@storeProfessor')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/professores/{id}/edit', 'EscolaController@editProfessor')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/professores/{id}', 'EscolaController@updateProfessor')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/professores/{id}/delete', 'EscolaController@deleteProfessor')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas CRUD de Alunos (Admin Escola)
+$router->get('/escola/alunos/create', 'EscolaController@createAluno')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/alunos', 'EscolaController@storeAluno')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/alunos/{id}/edit', 'EscolaController@editAluno')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/alunos/{id}', 'EscolaController@updateAluno')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/alunos/{id}/delete', 'EscolaController@deleteAluno')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas CRUD de Pais (Admin Escola)
+$router->get('/escola/pais/create', 'EscolaController@createPai')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/pais', 'EscolaController@storePai')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/pais/{id}/edit', 'EscolaController@editPai')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/pais/{id}', 'EscolaController@updatePai')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/pais/{id}/delete', 'EscolaController@deletePai')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas CRUD de Usuários (Admin Escola)
+$router->get('/escola/usuarios/create', 'EscolaController@createUsuario')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/usuarios', 'EscolaController@storeUsuario')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/usuarios/{id}/edit', 'EscolaController@editUsuario')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/usuarios/{id}', 'EscolaController@updateUsuario')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/usuarios/{id}/delete', 'EscolaController@deleteUsuario')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas CRUD de Matérias (Admin Escola)
+$router->get('/escola/materias/create', 'EscolaController@createMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/materias', 'EscolaController@storeMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/materias/{id}/edit', 'EscolaController@editMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/materias/{id}', 'EscolaController@updateMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/materias/{id}/delete', 'EscolaController@deleteMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas CRUD de Turmas (Admin Escola)
+$router->get('/escola/turmas/create', 'EscolaController@createTurma')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/turmas', 'EscolaController@storeTurma')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/turmas/{id}/edit', 'EscolaController@editTurma')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/turmas/{id}', 'EscolaController@updateTurma')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->get('/escola/turmas/{id}/delete', 'EscolaController@deleteTurma')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+
+// Rotas de Configurações
+$router->post('/escola/configuracoes/materias', 'EscolaController@storeMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->delete('/escola/configuracoes/materias/{id}', 'EscolaController@deleteMateria')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->post('/escola/configuracoes/series', 'EscolaController@storeSerie')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
+$router->delete('/escola/configuracoes/series/{id}', 'EscolaController@deleteSerie')->middleware('AuthMiddleware')->middleware('AdminEscolaMiddleware');
 
 // Rotas do Professor
 $router->get('/professor', 'ProfessorController@index')->middleware('AuthMiddleware')->middleware('ProfessorMiddleware');
@@ -138,8 +191,8 @@ $router->get('/pais/relatorios', 'PaisController@relatorios')->middleware('AuthM
 
 // Rotas de erro
 $router->get('/unauthorized', 'ErrorController@unauthorized');
-$router->get('/404', 'ErrorController@notFound');
-$router->get('/500', 'ErrorController@serverError');
+$router->get('educatudo/404', 'ErrorController@notFound');
+$router->get('educatudo/500', 'ErrorController@serverError');
 
 // Executar aplicação
 try {
@@ -157,8 +210,10 @@ try {
         return;
     }
 
+    
     // Tentar fazer match com rotas amigáveis primeiro
     $route = $router->match($method, $uri);
+    
     
     // Se não conseguir fazer match e não há página especificada, mostrar página inicial
     if (!$route && !isset($_GET['page'])) {
@@ -200,6 +255,7 @@ try {
                 break;
                 
             case 'admin-escola':
+            case 'escola':
                 $controller = new \Educatudo\Controllers\EscolaController();
                 $result = $controller->index();
                 break;

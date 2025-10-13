@@ -17,7 +17,7 @@ ob_start();
                     <p class="text-muted mb-0">Adicione um novo aluno à escola</p>
                 </div>
                 <div>
-                    <a href="<?php echo $app->url('/admin-escola/alunos'); ?>" class="btn btn-outline-secondary">
+                    <a href="<?php echo $app->url('/escola/alunos'); ?>" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -25,7 +25,7 @@ ob_start();
         </div>
     </div>
 
-    <form method="POST" action="<?php echo $app->url('/admin-escola/alunos'); ?>">
+    <form method="POST" action="<?php echo $app->url('/escola/alunos'); ?>">
         <div class="row">
             <!-- Informações Básicas -->
             <div class="col-lg-8">
@@ -142,7 +142,7 @@ ob_start();
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-plus-circle"></i> Criar Aluno
                             </button>
-                            <a href="<?php echo $app->url('/admin-escola/alunos'); ?>" class="btn btn-outline-secondary">
+                            <a href="<?php echo $app->url('/escola/alunos'); ?>" class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
                         </div>
@@ -186,5 +186,5 @@ document.getElementById('ra').addEventListener('input', function() {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../layouts/admin-global.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

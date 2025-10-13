@@ -15,7 +15,7 @@ ob_start();
                     <p class="text-muted mb-0">Adicione um novo pai ou responsável à escola</p>
                 </div>
                 <div>
-                    <a href="<?php echo $app->url('/admin-escola/pais'); ?>" class="btn btn-outline-secondary">
+                    <a href="<?php echo $app->url('/escola/pais'); ?>" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
                 </div>
@@ -23,7 +23,7 @@ ob_start();
         </div>
     </div>
 
-    <form method="POST" action="<?php echo $app->url('/admin-escola/pais'); ?>">
+    <form method="POST" action="<?php echo $app->url('/escola/pais'); ?>">
         <div class="row">
             <!-- Informações Básicas -->
             <div class="col-lg-8">
@@ -116,7 +116,7 @@ ob_start();
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-plus-circle"></i> Criar Pai/Responsável
                             </button>
-                            <a href="<?php echo $app->url('/admin-escola/pais'); ?>" class="btn btn-outline-secondary">
+                            <a href="<?php echo $app->url('/escola/pais'); ?>" class="btn btn-outline-secondary">
                                 <i class="bi bi-x-circle"></i> Cancelar
                             </a>
                         </div>
@@ -173,5 +173,5 @@ document.getElementById('email').addEventListener('input', function() {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../layouts/admin-global.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

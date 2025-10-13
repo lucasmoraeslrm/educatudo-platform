@@ -18,7 +18,7 @@ class Escola extends Model
         'plano',
         'ativa',
         'created_at',
-        'logo',
+        'logo_url',
         'cor_primaria',
         'cor_secundaria',
         'configuracoes',

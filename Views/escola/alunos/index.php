@@ -14,7 +14,7 @@ ob_start();
                     <p class="text-muted mb-0">Gerencie os alunos da escola</p>
                 </div>
                 <div>
-                    <a href="<?php echo $app->url('/admin-escola/alunos/create'); ?>" class="btn btn-primary">
+                    <a href="<?php echo $app->url('/escola/alunos/create'); ?>" class="btn btn-primary">
                         <i class="bi bi-plus-circle"></i> Novo Aluno
                     </a>
                 </div>
@@ -58,7 +58,7 @@ ob_start();
                                         </div>
                                         <h5>Nenhum aluno cadastrado</h5>
                                         <p class="mb-3">Comece adicionando alunos à escola.</p>
-                                        <a href="<?php echo $app->url('/admin-escola/alunos/create'); ?>" class="btn btn-primary">
+                                        <a href="<?php echo $app->url('/escola/alunos/create'); ?>" class="btn btn-primary">
                                             <i class="bi bi-plus-circle"></i> Adicionar Primeiro Aluno
                                         </a>
                                     </td>
@@ -117,7 +117,7 @@ ob_start();
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="<?php echo $app->url('/admin-escola/alunos/' . $aluno['usuario_id'] . '/edit'); ?>" 
+                                                <a href="<?php echo $app->url('/escola/alunos/' . $aluno['usuario_id'] . '/edit'); ?>" 
                                                    class="btn btn-sm btn-outline-primary" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -144,7 +144,7 @@ ob_start();
 function toggleStatus(alunoId, novoStatus) {
     const acao = novoStatus ? 'ativar' : 'desativar';
     if (confirm(`Tem certeza que deseja ${acao} este aluno?`)) {
-        fetch(`<?php echo $app->url('/admin-escola/alunos/' . $alunoId . '/delete'); ?>`, {
+        fetch(`<?php echo $app->url('/escola/alunos/' . $aluno['id'] . '/delete'); ?>`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -170,5 +170,5 @@ function toggleStatus(alunoId, novoStatus) {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../layouts/admin-global.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

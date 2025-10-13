@@ -59,6 +59,11 @@ class Materia extends Model
         ]);
     }
 
+    public function findByNameAndEscola(string $nome, int $escolaId): ?array
+    {
+        return $this->findByNome($nome, $escolaId);
+    }
+
     public function getByProfessor(int $professorId): array
     {
         $sql = "SELECT * FROM {$this->table} 

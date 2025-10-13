@@ -14,7 +14,7 @@ ob_start();
                     <p class="text-muted mb-0">Gerencie os pais e responsáveis da escola</p>
                 </div>
                 <div>
-                    <a href="<?php echo $app->url('/admin-escola/pais/create'); ?>" class="btn btn-primary">
+                    <a href="<?php echo $app->url('/escola/pais/create'); ?>" class="btn btn-primary">
                         <i class="bi bi-plus-circle"></i> Novo Pai
                     </a>
                 </div>
@@ -56,7 +56,7 @@ ob_start();
                                         </div>
                                         <h5>Nenhum pai/responsável cadastrado</h5>
                                         <p class="mb-3">Comece adicionando pais à escola.</p>
-                                        <a href="<?php echo $app->url('/admin-escola/pais/create'); ?>" class="btn btn-primary">
+                                        <a href="<?php echo $app->url('/escola/pais/create'); ?>" class="btn btn-primary">
                                             <i class="bi bi-plus-circle"></i> Adicionar Primeiro Pai
                                         </a>
                                     </td>
@@ -99,7 +99,7 @@ ob_start();
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="<?php echo $app->url('/admin-escola/pais/' . $pai['usuario_id'] . '/edit'); ?>" 
+                                                <a href="<?php echo $app->url('/escola/pais/' . $pai['usuario_id'] . '/edit'); ?>" 
                                                    class="btn btn-sm btn-outline-primary" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -126,7 +126,7 @@ ob_start();
 function toggleStatus(paiId, novoStatus) {
     const acao = novoStatus ? 'ativar' : 'desativar';
     if (confirm(`Tem certeza que deseja ${acao} este pai/responsável?`)) {
-        fetch(`<?php echo $app->url('/admin-escola/pais/' . $paiId . '/delete'); ?>`, {
+        fetch(`<?php echo $app->url('/escola/pais/' . $pai['id'] . '/delete'); ?>`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -152,5 +152,5 @@ function toggleStatus(paiId, novoStatus) {
 
 <?php
 $content = ob_get_clean();
-include __DIR__ . '/../layouts/admin-global.php';
+include __DIR__ . '/../layouts/app.php';
 ?>

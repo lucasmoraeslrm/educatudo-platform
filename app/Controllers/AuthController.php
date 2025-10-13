@@ -52,6 +52,7 @@ class AuthController extends Controller
             $_SESSION['user_name'] = $user['nome'];
             $_SESSION['user_tipo'] = $user['tipo'];
             $_SESSION['escola_id'] = $user['escola_id'];
+            $_SESSION['user_email'] = $user['email'];
             
             return $this->redirectToDashboard();
         }
@@ -132,7 +133,7 @@ class AuthController extends Controller
             case 'super_admin':
                 return $this->redirect('/admin');
             case 'admin_escola':
-                return $this->redirect('/admin-escola');
+                return $this->redirect('/escola');
             case 'professor':
                 return $this->redirect('/professor');
             case 'aluno':

@@ -49,23 +49,22 @@ class Controller
             return null;
         }
         
-        // Verificar se o user_id é válido
-        $userId = $_SESSION['user_id'];
-        if (!is_numeric($userId)) {
-            // Se não for numérico, limpar a sessão
-            unset($_SESSION['user_id']);
-            return null;
-        }
-        
-        $userModel = new \Educatudo\Models\Usuario($this->db);
-        return $userModel->find($userId);
+        // Retornar dados da sessão em vez de consultar o banco
+        return [
+            'id' => $_SESSION['user_id'],
+            'nome' => $_SESSION['user_name'] ?? null,
+            'tipo' => $_SESSION['user_tipo'] ?? null,
+            'escola_id' => $_SESSION['escola_id'] ?? null,
+            'email' => $_SESSION['user_email'] ?? null
+        ];
     }
 
     protected function requireAuth(): void
     {
         if (!$this->getUser()) {
-            $this->redirect('/login')->send();
-            exit;
+            $basePath = $this->app->getBasePath();
+            $this->redirect($basePath . '/login')->send();
+            return;
         }
     }
 
